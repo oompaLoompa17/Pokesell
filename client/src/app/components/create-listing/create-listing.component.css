@@ -1,0 +1,70 @@
+/* marketplace.component.css */
+.form-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  max-width: 400px;
+  margin: 20px auto;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+input, select {
+  padding: 8px;
+  font-size: 16px;
+}
+
+button {
+  padding: 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.success {
+  color: green;
+  margin-top: 15px;
+}
+
+.error {
+  color: red;
+  margin-top: 5px;
+}
+
+/* create-listing.component.css */
+.file-upload {
+  margin-bottom: 16px;
+}
+
+.file-upload mat-label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.file-upload button {
+  margin-right: 16px;
+}
+
+.file-name {
+  color: #333;
+}
+
+.file-placeholder {
+  color: #999;
+}

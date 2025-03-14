@@ -1,0 +1,36 @@
+<!-- login.component.html -->
+<div class="container">
+  <mat-card class="login-card">
+    <mat-card-header>
+      <mat-card-title>Log in to your TCG Pokédex</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <mat-card *ngIf="successMessage" class="message-card success">
+        <mat-card-content>{{ successMessage }}</mat-card-content>
+      </mat-card>
+      <mat-card *ngIf="errorMessage" class="message-card error">
+        <mat-card-content>{{ errorMessage }}</mat-card-content>
+      </mat-card>
+
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+        <mat-form-field appearance="outline">
+          <mat-label>Email Address</mat-label>
+          <input matInput formControlName="email" placeholder="Enter your email">
+          <mat-error *ngIf="loginForm.get('email')?.errors?.['required']">Email is required</mat-error>
+          <mat-error *ngIf="loginForm.get('email')?.errors?.['email']">Invalid email format</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Password</mat-label>
+          <input matInput type="password" formControlName="password" placeholder="Enter your password">
+          <mat-error *ngIf="loginForm.get('password')?.errors?.['required']">Password is required</mat-error>
+        </mat-form-field>
+
+        <button mat-raised-button color="primary" type="submit" [disabled]="loginForm.invalid">Login</button>
+      </form>
+    </mat-card-content>
+    <mat-card-actions>
+      Don't have an account?<a mat-button color="accent" routerLink="/register"> Register now</a>
+    </mat-card-actions>
+  </mat-card>
+</div>

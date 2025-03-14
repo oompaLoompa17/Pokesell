@@ -1,0 +1,85 @@
+.container {
+  padding: 10px;
+  max-width: 1200px;
+  font-size: 14px;
+}
+
+h2 {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+mat-card-title {
+  font-size: 16px;
+  margin-bottom: 4px !important; /* Reduce title bottom margin */
+}
+
+.favorite-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 8px;
+  overflow: hidden; /* Prevent content overflow */
+}
+
+img[mat-card-image] {
+  max-height: 200px;
+  object-fit: contain;
+  margin-bottom: 0 !important; /* Remove bottom margin from image */
+}
+
+mat-card-content {
+  flex-grow: 1;
+  padding: 4px !important; /* Reduce padding further */
+  overflow-y: auto; /* Allow scrolling if needed */
+}
+
+/* Target the mat-list to reduce its padding */
+.mat-list-base {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+/* Adjust the list items to be more compact */
+:host ::ng-deep .mat-list-item {
+  height: auto !important;
+  min-height: 32px !important; /* Reduce minimum height */
+}
+
+:host ::ng-deep .mat-list-item-content {
+  padding: 0 !important;
+}
+
+mat-list-item {
+  height: auto !important;
+  margin-bottom: 0 !important;
+}
+
+/* Make the list text more compact */
+[matListItemTitle] {
+  font-size: 12px !important;
+  margin-bottom: 0 !important;
+}
+
+[matListItemLine] {
+  font-size: 12px !important;
+  line-height: 1.2 !important;
+}
+
+mat-card-actions {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 8px !important;
+  margin: 0 !important; /* Remove default margins */
+}
+
+.back-to-search {
+  margin-top: 10px;
+  text-align: center;
+}
+
+/* Ensure buttons are visible */
+button[mat-button] {
+  line-height: 28px !important; /* Smaller button height */
+  font-size: 12px !important; /* Smaller button text */
+}

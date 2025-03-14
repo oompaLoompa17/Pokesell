@@ -1,0 +1,83 @@
+<!-- card-details.component.html -->
+<div class="container">
+  <!-- Loading State -->
+  <div class="loading-container" *ngIf="loading$ | async">
+    <mat-spinner diameter="50"></mat-spinner>
+  </div>
+
+  <!-- Error Message -->
+  <mat-card *ngIf="error$ | async as error" class="message-card error">
+    <mat-card-content>{{ error }}</mat-card-content>
+  </mat-card>
+
+  <!-- Success Message -->
+  <mat-card *ngIf="message$ | async as message" class="message-card success">
+    <mat-card-content>{{ message }}</mat-card-content>
+  </mat-card>
+
+  <!-- Card Details -->
+  <mat-card class="card-details" *ngIf="card$ | async as card">
+    <mat-card-header>
+      <mat-card-title>{{ card.name }}</mat-card-title>
+    </mat-card-header>
+    <img mat-card-image [src]="card.images?.large" alt="{{ card.name }} Image" />
+    <mat-card-content>
+      <mat-list>
+        <mat-list-item>
+          <span matListItemTitle>Type</span>
+          <span matListItemLine>{{ card.types?.join(', ') || 'N/A' }}</span>
+        </mat-list-item>
+        <mat-list-item>
+          <span matListItemTitle>Rarity</span>
+          <span matListItemLine>{{ card.rarity || 'N/A' }}</span>
+        </mat-list-item>
+        <mat-list-item>
+          <span matListItemTitle>Set</span>
+          <span matListItemLine>{{ card.set?.name || 'N/A' }}</span>
+        </mat-list-item>
+      </mat-list>
+
+      <mat-divider></mat-divider>
+
+      <h3>Pricing Information</h3>
+      <mat-list>
+        <mat-list-item>
+          <span matListItemTitle>TCGPlayer Market (Holofoil)</span>
+          <span matListItemLine>{{ card.tcgplayer?.prices?.holofoil?.market ? '$' + card.tcgplayer.prices.holofoil.market : 'N/A' }}</span>
+        </mat-list-item>
+        <mat-list-item>
+          <span matListItemTitle>TCGPlayer Low (Holofoil)</span>
+          <span matListItemLine>{{ card.tcgplayer?.prices?.holofoil?.low ? '$' + card.tcgplayer.prices.holofoil.low : 'N/A' }}</span>
+        </mat-list-item>
+        <mat-list-item>
+          <span matListItemTitle>TCGPlayer High (Reverse Holofoil)</span>
+          <span matListItemLine>{{ card.tcgplayer?.prices?.reverseHolofoil?.high ? '$' + card.tcgplayer.prices.reverseHolofoil.high : 'N/A' }}</span>
+        </mat-list-item>
+        <mat-list-item>
+          <span matListItemTitle>TCGPlayer URL</span>
+          <a matListItemLine [href]="card.tcgplayer?.url || '#'" target="_blank">{{ card.tcgplayer?.url || 'N/A' }}</a>
+        </mat-list-item>
+        <mat-list-item>
+          <span matListItemTitle>Average Sell Price (Cardmarket)</span>
+          <span matListItemLine>{{ card.cardmarket?.prices?.averageSellPrice ? '$' + card.cardmarket.prices.averageSellPrice : 'N/A' }}</span>
+        </mat-list-item>
+        <mat-list-item>
+          <span matListItemTitle>Low Price (Cardmarket)</span>
+          <span matListItemLine>{{ card.cardmarket?.prices?.lowPrice ? '$' + card.cardmarket.prices.lowPrice : 'N/A' }}</span>
+        </mat-list-item>
+        <mat-list-item>
+          <span matListItemTitle>Trend Price (Cardmarket)</span>
+          <span matListItemLine>{{ card.cardmarket?.prices?.trendPrice ? '$' + card.cardmarket.prices.trendPrice : 'N/A' }}</span>
+        </mat-list-item>
+        <mat-list-item>
+          <span matListItemTitle>Cardmarket URL</span>
+          <a matListItemLine [href]="card.cardmarket?.url || '#'" target="_blank">{{ card.cardmarket?.url || 'N/A' }}</a>
+        </mat-list-item>
+      </mat-list>
+    </mat-card-content>
+    <mat-card-actions>
+      <button mat-raised-button color="primary" (click)="addToFavorites(card.id)">Add to Favorites</button>
+      <button mat-button color="accent" (click)="goBack()">Back to Search</button>
+    </mat-card-actions>
+  </mat-card>
+</div>

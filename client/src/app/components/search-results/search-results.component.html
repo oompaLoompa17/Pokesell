@@ -1,0 +1,47 @@
+<div class="container">
+    <h2>Search Results</h2>
+  
+    <div *ngIf="message" class="alert alert-success text-center">{{ message }}</div>
+    <div *ngIf="error" class="alert alert-danger text-center">{{ error }}</div>
+  
+    <div *ngIf="cards.length > 0" class="card-container">
+      <div *ngFor="let card of cards" class="card">
+        <img [src]="card.images.small" alt="Card Image">
+        <div class="card-body">
+          <h5 class="card-title">{{ card.name }}</h5>
+          <p class="card-text">
+            <strong>Type:</strong> {{ card.types?.join(', ') || 'N/A' }}<br>
+            <strong>Rarity:</strong> {{ card.rarity || 'N/A' }}<br>
+            <strong>Set:</strong> {{ card.set?.name || 'N/A' }}
+          </p>
+          <div class="pricing-section">
+            <p>
+              <strong>Market Price:</strong>
+              {{ card.tcgplayer?.prices?.holofoil?.market ? '$' + card.tcgplayer.prices.holofoil.market : 'N/A' }}
+            </p>
+          </div>
+          <a [routerLink]="['/cards', card.id]" class="btn btn-primary mb-2">View Details</a>
+          <button (click)="addToFavorites(card.id)" class="btn btn-success">Add to Favorites</button>
+        </div>
+      </div>
+    </div>
+  
+    <div *ngIf="cards.length === 0" class="no-results">
+      <p>No cards found. Try modifying your search criteria.</p>
+      <button (click)="goBack()" class="btn btn-secondary">Return to Search</button>
+    </div>
+  
+    <nav *ngIf="cards.length > 0">
+      <ul class="pagination">
+        <li class="page-item" [class.disabled]="currentPage === 1">
+          <a class="page-link" (click)="changePage(currentPage - 1)">Previous</a>
+        </li>
+        <li class="page-item disabled">
+          <a class="page-link">Page {{ currentPage }} of {{ totalPages }}</a>
+        </li>
+        <li class="page-item" [class.disabled]="currentPage === totalPages">
+          <a class="page-link" (click)="changePage(currentPage + 1)">Next</a>
+        </li>
+      </ul>
+    </nav>
+  </div>

@@ -1,0 +1,37 @@
+.container {
+    padding: 20px;
+  }
+  
+  .purchase-card {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  
+  .thumbnail {
+    max-width: 100px;
+    margin: 10px;
+  }
+  
+  .payment-section {
+    margin-top: 20px;
+  }
+  
+  #card-element {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 10px;
+    min-height: 40px; /* Ensure visible space */
+    width: 100%; /* Ensure it takes full width of container */
+  }
+  
+  .error {
+    color: red;
+  }
+  
+  .success {
+    color: green;
+  }
+  
+  .loading {
+    text-align: center;
+  }

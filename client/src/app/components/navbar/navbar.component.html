@@ -1,0 +1,45 @@
+<mat-toolbar color="primary">
+  <div class="nav-container">
+    <!-- Branding/Title -->
+    <span class="title">Pokémon TCG Marketplace</span>
+    
+    <!-- Navigation Links -->
+    <div class="nav-links">
+      <a mat-button routerLink="/search">Search</a>
+      
+      <!-- Logged-In Links -->
+      <ng-container *ngIf="isLoggedIn()">
+        <a mat-button routerLink="/favorites">Favorites</a>
+        <a mat-button routerLink="/marketplace/fixed">Fixed Listings</a>
+        <a mat-button routerLink="/marketplace/auctions">Live Auctions</a>
+        <a mat-button routerLink="/create-listing">Create Listing</a>
+        <button mat-raised-button color="warn" (click)="logout()">Logout</button>
+      </ng-container>
+
+      <!-- Logged-Out Links -->
+      <ng-container *ngIf="!isLoggedIn()">
+        <a mat-button routerLink="/register">Register</a>
+        <a mat-button routerLink="/">Login</a>
+      </ng-container>
+    </div>
+  </div>
+</mat-toolbar>
+
+<!-- navbar.component.html
+<mat-toolbar color="primary">
+  <div class="nav-container">
+    <a mat-button routerLink="/">Home</a>
+    <a mat-button routerLink="/search">Search</a>
+    <ng-container *ngIf="isLoggedIn()">
+      <a mat-button routerLink="/favorites">Favorites</a>
+      <a mat-button routerLink="/create-listing">Create a Listing</a>
+      <button mat-button routerLink="/fixed">Fixed Listings</button>
+      <button mat-button routerLink="/auctions">Auctions</button>
+      <button mat-raised-button color="warn" (click)="logout()">Logout</button>
+    </ng-container>
+    <ng-container *ngIf="!isLoggedIn()">
+      <a mat-button routerLink="/register">Register</a>
+      <a mat-button routerLink="/">Login</a>
+    </ng-container>
+  </div>
+</mat-toolbar> -->

@@ -1,0 +1,39 @@
+/* register.component.css */
+.container {
+    padding: 20px;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+  
+  .register-card {
+    padding: 16px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  mat-form-field {
+    width: 100%;
+    margin-bottom: 16px;
+  }
+  
+  .password-criteria {
+    margin-bottom: 16px;
+  }
+  
+  .password-criteria .fulfilled {
+    color: #2e7d32;
+  }
+  
+  .message-card {
+    margin-bottom: 20px;
+  }
+  
+  .error {
+    background-color: #ffebee;
+    color: #c62828;
+  }
+  
+  .button-group {
+    display: flex;
+    gap: 10px;
+    justify-content: space-between;
+  }
