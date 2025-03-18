@@ -1,0 +1,7 @@
+/* Existing styles */
+.thumbnail { max-width: 150px; margin: 10px; }
+.error { color: red; }
+.no-listings { text-align: center; padding: 20px; }
+
+/* New style */
+.telegram-subscription { margin-top: 20px; text-align: center; }

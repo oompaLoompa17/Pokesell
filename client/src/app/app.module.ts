@@ -68,7 +68,7 @@ const routes: Routes = [
     FixedListingsComponent,
     AuctionListingsComponent,
     PurchaseComponent,
-    AuctionPurchaseComponent
+    AuctionPurchaseComponent,
   ],
   imports: [
     BrowserModule,

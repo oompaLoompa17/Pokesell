@@ -53,7 +53,7 @@ export class PokemonService {
   getActiveListings(): Observable<Listing[]> {
     return this.http.get<Listing[]>('/api/marketplace/active');
   }
-  
+
   placeBid(listingId: number, bidAmount: number): Observable<{ message: string, bidId: number, bidAmount: number }> {
     return this.http.post<{ message: string, bidId: number, bidAmount: number }>('/api/marketplace/bid', { listingId, bidAmount });
   }
@@ -74,7 +74,9 @@ export class PokemonService {
     return this.http.post<{ message: string }>('/api/marketplace/purchase', { listingId });
   }
 
-
+  generateTelegramSubscriptionDeepLink(): Observable<{ deepLink: string, subscribed: string }> {
+    return this.http.get<{ deepLink: string, subscribed: string }>('/api/telegram/subscribe');
+  }
 }
 
 export interface Listing {

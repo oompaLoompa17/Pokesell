@@ -18,6 +18,8 @@ export class AuctionListingsComponent implements OnInit, OnDestroy {
   displayedColumns: string[] = ['id', 'overallGrade', 'price', 'buyoutPrice', 'frontImage', 'backImage', 'auctionEnd', 'actions'];
   private timerSubscription!: Subscription;
   bidForms: { [key: number]: FormGroup } = {};
+  telegramDeepLink: string | null = null;
+  isTelegramSubscribed: boolean = false;
 
   constructor(
     private pokemonService: PokemonService,
@@ -28,6 +30,7 @@ export class AuctionListingsComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.loadAuctionListings();
+    this.checkTelegramSubscription();
     this.timerSubscription = interval(1000).subscribe(() => this.updateTimers());
   }
 
@@ -91,5 +94,24 @@ export class AuctionListingsComponent implements OnInit, OnDestroy {
 
   goBack() {
     this.router.navigate(['/marketplace']);
+  }
+
+  checkTelegramSubscription() {
+    this.pokemonService.generateTelegramSubscriptionDeepLink().subscribe({
+      next: (response) => {
+        this.telegramDeepLink = response.deepLink || null;
+        this.isTelegramSubscribed = response.subscribed === 'true';
+      },
+      error: (err) => {
+        this.error = 'Failed to check Telegram subscription: ' + err.message;
+      }
+    });
+  }
+
+  connectTelegram() {
+    if (this.telegramDeepLink) {
+      window.open(this.telegramDeepLink, '_blank');
+      setTimeout(() => this.checkTelegramSubscription(), 5000); // Re-check after 5s to update UI
+    }
   }
 }

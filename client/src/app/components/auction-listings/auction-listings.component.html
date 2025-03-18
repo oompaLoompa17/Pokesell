@@ -61,6 +61,11 @@
         <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
       </table>
       <div *ngIf="listings.length === 0" class="no-listings">No auction listings found.</div>
+      <div class="telegram-subscription">
+        <button mat-raised-button color="primary" (click)="connectTelegram()" [disabled]="isTelegramSubscribed || !telegramDeepLink">
+          {{ isTelegramSubscribed ? 'Telegram Connected' : 'Connect Telegram for Notifications' }}
+        </button>
+      </div>
     </mat-card-content>
     <mat-card-actions>
       <button mat-button color="accent" (click)="goBack()">Back</button>
