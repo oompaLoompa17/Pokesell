@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Your Favorite Cards - Pokémon TCG</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/favorites.css"> <!-- Link to the external CSS file -->
+</head>
+<body>
+
+<header class="d-flex align-items-center px-4 py-2">
+    <!-- Left Aligned "Home" Button -->
+    <a th:href="@{/search}" class="btn-home me-auto">Home</a>
+
+    <!-- Centered Title -->
+    <h1 class="mb-0 flex-grow-1 text-center">Pokémon TCG Card Search</h1>
+
+    <!-- Right Aligned Buttons -->
+    <div class="header-actions ms-auto">
+        <a href="/api/documentation" class="btn-api">API Doc</a>
+        <a th:href="@{/favorites}" class="btn-favorites">View Favorites</a>
+        <form th:action="@{/logout}" method="post">
+            <button type="submit" class="btn-logout">Logout</button>
+        </form>
+    </div>
+</header>
+
+<div class="container">
+    <h2>Your Favorite Cards</h2>
+
+    <!-- Flash Messages -->
+    <div th:if="${message}" class="alert alert-success">
+        <span th:text="${message}"></span>
+    </div>
+    <div th:if="${error}" class="alert alert-danger">
+        <span th:text="${error}"></span>
+    </div>
+
+    <!-- No Favorites Message -->
+    <div th:if="${favorites.size() == 0}" class="alert alert-info">
+        You have no favorite cards yet. Add some to start your Pokémon TCG collection!
+    </div>
+
+    <!-- Favorite Cards Display -->
+    <div th:if="${favorites.size() > 0}" class="card-container">
+        <div th:each="card : ${favorites}" class="card">
+            <img th:src="${card.images.small}" alt="Card Image">
+            <div class="card-body">
+                <h5 class="card-title" th:text="${card.name}">Card Name</h5>
+                <p class="card-text">
+                    <strong>Type:</strong> <span th:text="${#strings.arrayJoin(card.types, ', ')}">Type</span><br>
+                    <strong>Rarity:</strong> <span th:text="${card.rarity}">Rarity</span><br>
+                    <strong>Set:</strong> <span th:text="${card.set != null && card.set.name != null ? card.set.name : 'N/A'}">Set Name</span><br>
+                    <strong>TCGPlayer Market Price:</strong>
+                    <span th:text="${card.tcgplayer != null && card.tcgplayer.prices != null && card.tcgplayer.prices['holofoil'] != null && card.tcgplayer.prices['holofoil'].market != null ? '$' + card.tcgplayer.prices['holofoil'].market : 'N/A'}"></span><br>
+                    <strong>Cardmarket Trend Price:</strong>
+                    <span th:text="${card.cardmarket != null && card.cardmarket.prices != null && card.cardmarket.prices['trendPrice'] != null ? '$' + card.cardmarket.prices['trendPrice'] : 'N/A'}"></span>
+                </p>
+
+                <!-- View Details Button -->
+                <a th:href="@{/cards/{id}(id=${card.id})}" class="btn btn-primary">View Details</a>
+
+                <!-- Remove from Favorites Button -->
+                <form th:action="@{/favorites/remove}" method="post" class="mt-2">
+                    <input type="hidden" name="cardId" th:value="${card.id}">
+                    <button type="submit" class="btn btn-danger">Remove</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Back to Search -->
+    <div class="back-to-search">
+        <button onclick="history.back()" class="btn btn-secondary">Previous Page</button>
+    </div>
+</div>
+</body>
+</html>

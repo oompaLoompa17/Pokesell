@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Search Results</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/searchResults.css"> <!-- Link to external CSS -->
+</head>
+<body>
+
+<header class="d-flex align-items-center px-4 py-2">
+    <!-- Left-Aligned "Home" Button -->
+    <a th:href="@{/search}" class="btn-home me-auto">Home</a>
+
+    <!-- Centered Title -->
+    <h1 class="mb-0 flex-grow-1 text-center">Pokémon TCG Card Search</h1>
+
+    <!-- Right Aligned Buttons -->
+    <div class="header-actions ms-auto">
+        <a href="/api/documentation" class="btn-api">API Doc</a>
+        <a th:href="@{/favorites}" class="btn-favorites">View Favorites</a>
+        <form th:action="@{/logout}" method="post">
+            <button type="submit" class="btn-logout">Logout</button>
+        </form>
+    </div>
+</header>
+
+<div class="container">
+    <h2>Search Results</h2>
+
+    <!-- Flash Messages -->
+    <div th:if="${message}" class="alert alert-success text-center">
+        <span th:text="${message}"></span>
+    </div>
+    <div th:if="${error}" class="alert alert-danger text-center">
+        <span th:text="${error}"></span>
+    </div>
+
+    <!-- Check if there are results -->
+    <div th:if="${cards.size() > 0}" class="card-container">
+        <div th:each="card : ${cards}" class="card">
+            <img th:src="${card.images.small}" alt="Card Image">
+            <div class="card-body">
+                <h5 class="card-title" th:text="${card.name}">Card Name</h5>
+                <p class="card-text">
+                    <strong>Type:</strong> <span th:text="${#strings.arrayJoin(card.types, ', ')}">Type</span><br>
+                    <strong>Rarity:</strong> <span th:text="${card.rarity}">Rarity</span><br>
+                    <strong>Set:</strong> <span th:text="${card.set.name}">Set</span>
+                </p>
+                <div class="pricing-section">
+                    <p>
+                        <strong>Market Price:</strong>
+                        <span th:text="${card.tcgplayer != null && card.tcgplayer.prices['holofoil'] != null && card.tcgplayer.prices['holofoil'].market != null ? '$' + card.tcgplayer.prices['holofoil'].market : 'N/A'}">N/A</span>
+                    </p>
+                </div>
+                <a th:href="@{/cards/{id}(id=${card.id}, name=${name}, set=${set}, type=${type}, rarity=${rarity}, page=${currentPage}, pageSize=${pageSize})}"
+                   class="btn btn-primary mb-2">View Details</a>
+                <form th:action="@{/favorites/add}" method="post" class="d-inline">
+                    <input type="hidden" name="cardId" th:value="${card.id}">
+                    <button type="submit" class="btn btn-success">Add to Favorites</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- If No Cards Found -->
+    <div th:if="${cards.size() == 0}" class="no-results">
+        <p>No cards found. Try modifying your search criteria.</p>
+        <button onclick="history.back()" class="btn btn-secondary">Return to Search</button>
+    </div>
+
+    <!-- Pagination -->
+    <nav th:if="${cards.size() > 0}">
+        <ul class="pagination">
+            <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
+                <a class="page-link" th:href="@{/cards/search(name=${name}, set=${set}, type=${type}, rarity=${rarity}, page=${currentPage - 1}, pageSize=${pageSize})}">
+                    Previous
+                </a>
+            </li>
+            <li class="page-item disabled">
+                <a class="page-link">
+                    Page <span th:text="${currentPage}"></span> of <span th:text="${totalPages}"></span>
+                </a>
+            </li>
+            <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
+                <a class="page-link" th:href="@{/cards/search(name=${name}, set=${set}, type=${type}, rarity=${rarity}, page=${currentPage + 1}, pageSize=${pageSize})}">
+                    Next
+                </a>
+            </li>
+        </ul>
+    </nav>
+</div>
+</body>
+</html>

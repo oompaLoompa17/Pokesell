@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>404 Error - Pokémon TCG</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/error.css"> <!-- Link to the external CSS file -->
+</head>
+<body>
+<div class="error-container">
+    <div class="error-header">404 Error</div>
+    <p class="error-message" th:text="${errorMessage}">The page you’re looking for doesn’t exist or may have been removed.</p>
+
+    <!-- Search Form -->
+    <form th:action="@{/cards/search}" method="get" class="search-form">
+        <input type="text" name="name" placeholder="Search for a card..." required>
+        <button type="submit">Search</button>
+    </form>
+
+    <!-- Navigation Links -->
+    <div class="links">
+        <a href="/search">Back to Search</a>
+    </div>
+</div>
+</body>
+</html>

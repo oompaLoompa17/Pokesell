@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Pokémon TCG - Register</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/register.css"> <!-- Link to external CSS -->
+</head>
+<body>
+<div class="register-container">
+    <h1 class="register-header">Register for TCG Pokédex</h1>
+
+    <!-- Registration Form -->
+    <form th:object="${user}" th:action="@{/register}" method="post">
+        <!-- Error Alert -->
+        <div th:if="${error}" class="error-message">
+            <span th:text="${error}"></span>
+        </div>
+
+        <!-- Email Field -->
+        <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" id="email" name="email" th:field="*{email}" class="form-control" placeholder="Enter your email" required>
+            <p th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="text-danger"></p>
+        </div>
+
+        <!-- Password Field -->
+        <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <input type="password" id="password" name="password" th:field="*{password}" class="form-control" placeholder="Enter your password" required>
+            <p th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="text-danger"></p>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="d-flex justify-content-between align-items-center">
+            <button type="submit" class="btn-register">Register</button>
+            <a th:href="@{/}" class="btn-login">Login</a>
+        </div>
+    </form>
+</div>
+</body>
+</html>
