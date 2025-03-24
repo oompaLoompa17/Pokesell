@@ -118,7 +118,7 @@ export class PurchaseComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async pay() {
-    if (!this.stripe || !this.card || !this.listing) {
+    if (!this.stripe || !this.card || !this.listing || this.listing.buyoutPrice === undefined) {
       this.error = 'Payment form is not ready. Please refresh the page.';
       this.processing = false;
       return;
@@ -151,6 +151,9 @@ export class PurchaseComponent implements OnInit, AfterViewInit, OnDestroy {
         await firstValueFrom(this.pokemonService.completePurchase(this.listing.id));
         this.message = 'Payment successful! Listing purchased.';
         this.error = null;
+        this.listing.soldPrice = this.listing.buyoutPrice;
+        this.listing.soldDate = new Date().toISOString();
+        this.cdr.detectChanges();
         setTimeout(() => this.router.navigate(['/marketplace/fixed']), 2000);
       }
     } catch (err) {

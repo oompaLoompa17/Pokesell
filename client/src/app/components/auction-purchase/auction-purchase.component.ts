@@ -117,6 +117,9 @@ export class AuctionPurchaseComponent implements OnInit, AfterViewInit, OnDestro
         await firstValueFrom(this.pokemonService.completeAuctionBuyout(this.listing.id));
         this.message = 'Buyout successful! Listing purchased.';
         this.error = null;
+        this.listing.soldPrice = this.listing.buyoutPrice;
+        this.listing.soldDate = new Date().toISOString();
+        this.cdr.detectChanges();
         setTimeout(() => this.router.navigate(['/marketplace/auctions']), 2000);
       }
     } catch (err) {

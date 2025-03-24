@@ -1,13 +1,19 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PokemonService {
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private authService: AuthService) {}
+
+  private getAuthHeaders(): HttpHeaders {
+    const token = this.authService.getToken();
+    return token ? new HttpHeaders().set('Authorization', `Bearer ${token}`) : new HttpHeaders();
+  }
 
   searchCards(params: any): Observable<{ cards: any[], totalPages: number }> {
     return this.http.get<{ cards: any[], totalPages: number }>('/api/cards/search', { params });
@@ -38,20 +44,73 @@ export class PokemonService {
     return this.http.get<any[]>('/api/cards/raw');
   }
 
-  createListing(frontImage: File, backImage: File, startingPrice: number, buyoutPrice: number, listingType: string, auctionStart?: string):
-                 Observable<{ message: string, listingId: number }> {
+  createListing(
+    frontImage: File,
+    backImage: File,
+    startingPrice: number | null,
+    buyoutPrice: number | null,
+    listingType: string,
+    auctionStart?: string,
+    cardName?: string,
+    cardSet?: string,
+    cardNumber?: string
+  ): Observable<{ message: string, listingId: number }> {
     const formData = new FormData();
     formData.append('frontImage', frontImage);
     formData.append('backImage', backImage);
     formData.append('listingType', listingType);
+    if (cardName) formData.append('cardName', cardName);
+    if (cardSet) formData.append('cardSet', cardSet);
+    if (cardNumber) formData.append('cardNumber', cardNumber);
     if (startingPrice) formData.append('startingPrice', startingPrice.toString());
     if (buyoutPrice) formData.append('buyoutPrice', buyoutPrice.toString());
-    if (auctionStart) formData.append('auctionStart', auctionStart); // ISO string, e.g., "2025-03-15T10:00:00"
+    if (auctionStart) formData.append('auctionStart', auctionStart);
     return this.http.post<{ message: string, listingId: number }>('/api/marketplace/list', formData);
   }
 
   getActiveListings(): Observable<Listing[]> {
-    return this.http.get<Listing[]>('/api/marketplace/active');
+    return this.http.get<any[]>('/api/marketplace/active', { headers: this.getAuthHeaders() }).pipe(
+      map(listings => listings.map(listing => ({
+        id: listing.id,
+        userId: listing.userId,
+        cardName: listing.cardName,
+        cardSet: listing.cardSet,
+        cardNumber: listing.cardNumber,
+        overallGrade: listing.overallGrade,
+        startingPrice: listing.startingPrice,
+        buyoutPrice: listing.buyoutPrice,
+        soldPrice: listing.soldPrice,
+        soldDate: listing.soldDate,
+        listingType: listing.listingType,
+        auctionStart: listing.auctionStart,
+        auctionEnd: listing.auctionEnd,
+        status: listing.status,
+        frontImage: listing.frontImage,
+        backImage: listing.backImage
+      })))
+    );
+  }
+  
+  getSoldListings(): Observable<Listing[]> {
+    return this.http.get<any[]>('/api/marketplace/sold', { headers: this.getAuthHeaders() }).pipe(
+      map(listings => listings.map(listing => ({
+        id: listing.id,
+        cardName: listing.cardName,
+        cardSet: listing.cardSet,
+        cardNumber: listing.cardNumber,
+        overallGrade: listing.overallGrade,
+        startingPrice: listing.startingPrice,
+        buyoutPrice: listing.buyoutPrice,
+        soldPrice: listing.soldPrice,
+        soldDate: listing.soldDate,
+        listingType: listing.listingType,
+        auctionStart: listing.auctionStart,
+        auctionEnd: listing.auctionEnd,
+        status: listing.status,
+        frontImage: listing.frontImage,
+        backImage: listing.backImage
+      })))
+    );
   }
 
   placeBid(listingId: number, bidAmount: number): Observable<{ message: string, bidId: number, bidAmount: number }> {
@@ -77,19 +136,40 @@ export class PokemonService {
   generateTelegramSubscriptionDeepLink(): Observable<{ deepLink: string, subscribed: string }> {
     return this.http.get<{ deepLink: string, subscribed: string }>('/api/telegram/subscribe');
   }
+
+  checkGoogleAuth(): Observable<{ isAuthorized: boolean }> {
+    return this.http.get<{ isAuthorized: boolean }>('/api/marketplace/check-auth', { withCredentials: true });
+  }
+
+  exportToGoogleSheets(): Observable<{ message: string, spreadsheetUrl?: string }> {
+    return this.http.post<{ message: string, spreadsheetUrl?: string }>('/api/marketplace/export-sold', {}, { withCredentials: true });
+  }
+
+  // exportSoldListings(): void {
+  //   // Instead of an HTTP POST, redirect to the backend's OAuth2 authorization endpoint
+  //   window.location.href = '/api/marketplace/oauth2/authorize';
+  // }
+
+  exportSoldListings(): Observable<any> {
+    return this.http.get('/api/marketplace/export-sold', { headers: this.getAuthHeaders() });
+  }
 }
 
 export interface Listing {
   id: number;
-  userId: number;
-  cardId: string;
+  userId?: number;
+  cardName: string;
+  cardSet: string;
+  cardNumber: string;
   overallGrade: number;
-  startingPrice: number;
-  buyoutPrice: number;
+  startingPrice?: number;
+  buyoutPrice?: number;
+  soldPrice?: number;
+  soldDate?: string; // ISO string, e.g., "2025-03-23T12:34:56"
   listingType: string;
   auctionStart?: string;
   auctionEnd?: string;
-  status: string;
-  frontImage: string; // Base64 string
-  backImage: string; // Base64 string
+  status?: string;
+  frontImage?: string; // Base64 string
+  backImage?: string; // Base64 string
 }

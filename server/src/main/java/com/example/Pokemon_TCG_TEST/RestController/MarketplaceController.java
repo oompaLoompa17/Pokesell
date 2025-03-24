@@ -51,6 +51,9 @@ public class MarketplaceController {
         @RequestParam(value = "buyoutPrice", required = false) Double buyoutPrice,
         @RequestParam("listingType") String listingType,
         @RequestParam(value = "auctionStart", required = false) LocalDateTime auctionStart,
+        @RequestParam("cardName") String cardName,
+        @RequestParam("cardSet") String cardSet,
+        @RequestParam("cardNumber") String cardNumber,
         Authentication auth
     ) throws JsonProcessingException, IOException {
         ResponseEntity<?> gradingResponse = graderService.gradeCard(frontImage, backImage);
@@ -64,12 +67,12 @@ public class MarketplaceController {
         }
         Long userId = userRepo.findByEmail(auth.getName()).orElseThrow().getId();
         Listing listing = marketplaceService.createListing(
-            userId, "cardId", gradingResult, startingPrice, buyoutPrice, listingType, auctionStart,
-            frontImage.getBytes(), backImage.getBytes() // Convert MultipartFile to byte[]
+            userId, cardName, cardSet, cardNumber, gradingResult, startingPrice, buyoutPrice, listingType, auctionStart,
+            frontImage.getBytes(), backImage.getBytes()
         );
         return ResponseEntity.ok(Map.of("message", "Listing created", "listingId", listing.getId()));
     }
-
+    
     @GetMapping("/active")
     public ResponseEntity<List<Map<String, Object>>> getActiveListings() {
         List<Listing> activeListings = marketplaceService.getActiveListings();
@@ -77,10 +80,14 @@ public class MarketplaceController {
             Map<String, Object> map = new HashMap<>();
             map.put("id", listing.getId());
             map.put("userId", listing.getUserId());
-            map.put("cardId", listing.getCardId());
+            map.put("cardName", listing.getCardName());
+            map.put("cardSet", listing.getCardSet());
+            map.put("cardNumber", listing.getCardNumber());
             map.put("overallGrade", listing.getOverallGrade());
             map.put("startingPrice", listing.getStartingPrice());
             map.put("buyoutPrice", listing.getBuyoutPrice());
+            map.put("soldPrice", listing.getSoldPrice());
+            map.put("soldDate", listing.getSoldDate());
             map.put("listingType", listing.getListingType());
             map.put("auctionStart", listing.getAuctionStart());
             map.put("auctionEnd", listing.getAuctionEnd());
@@ -198,5 +205,24 @@ public class MarketplaceController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(Map.of("error", e.getMessage()));
         }
+    }
+
+    @GetMapping("/sold")
+    public ResponseEntity<List<Map<String, Object>>> getSoldListings(Authentication auth) {
+        Long userId = userRepo.findByEmail(auth.getName()).orElseThrow().getId();
+        List<Listing> soldListings = marketplaceService.getSoldListingsByUser(userId);
+        List<Map<String, Object>> responseList = soldListings.stream().map(listing -> {
+            Map<String, Object> map = new HashMap<>();
+            map.put("id", listing.getId());
+            map.put("cardName", listing.getCardName());
+            map.put("cardSet", listing.getCardSet());
+            map.put("cardNumber", listing.getCardNumber());
+            map.put("overallGrade", listing.getOverallGrade());
+            map.put("soldPrice", listing.getSoldPrice());
+            map.put("soldDate", listing.getSoldDate());
+            map.put("listingType", listing.getListingType());
+            return map;
+        }).collect(Collectors.toList());
+        return ResponseEntity.ok(responseList);
     }
 }

@@ -35,7 +35,7 @@ export class SearchComponent implements OnInit{
       next: (filters) => {
         this.sets = filters.sets;
         this.types = filters.types;
-        this.rarities = filters.rarities;
+          this.rarities = filters.rarities;
       },
       error: (err) => {
         console.error('Error fetching filters:', err);

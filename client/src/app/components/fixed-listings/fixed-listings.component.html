@@ -1,48 +1,114 @@
 <div class="container">
-  <mat-card class="listings-card">
-    <mat-card-header>
-      <mat-card-title>Fixed-Price Listings</mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
-      <div *ngIf="error" class="error">{{ error }}</div>
-      <table mat-table [dataSource]="listings" class="mat-elevation-z8">
-        <ng-container matColumnDef="id">
-          <th mat-header-cell *matHeaderCellDef>ID</th>
-          <td mat-cell *matCellDef="let listing">{{ listing.id }}</td>
-        </ng-container>
-        <ng-container matColumnDef="overallGrade">
-          <th mat-header-cell *matHeaderCellDef>Grade</th>
-          <td mat-cell *matCellDef="let listing">{{ listing.overallGrade }}</td>
-        </ng-container>
-        <ng-container matColumnDef="price">
-          <th mat-header-cell *matHeaderCellDef>Price (SGD)</th>
-          <td mat-cell *matCellDef="let listing">{{ listing.price | number:'1.2-2' }}</td>
-        </ng-container>
-        <ng-container matColumnDef="frontImage">
-          <th mat-header-cell *matHeaderCellDef>Front Image</th>
-          <td mat-cell *matCellDef="let listing">
-            <img [src]="'data:image/jpeg;base64,' + listing.frontImage" alt="Front Image" class="thumbnail" />
-          </td>
-        </ng-container>
-        <ng-container matColumnDef="backImage">
-          <th mat-header-cell *matHeaderCellDef>Back Image</th>
-          <td mat-cell *matCellDef="let listing">
-            <img [src]="'data:image/jpeg;base64,' + listing.backImage" alt="Back Image" class="thumbnail" />
-          </td>
-        </ng-container>
-        <ng-container matColumnDef="actions">
-          <th mat-header-cell *matHeaderCellDef>Actions</th>
-          <td mat-cell *matCellDef="let listing">
-            <button mat-button color="primary" [routerLink]="['/marketplace/purchase', listing.id]">Buy</button>
-          </td>
-        </ng-container>
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-      </table>
-      <div *ngIf="listings.length === 0" class="no-listings">No fixed-price listings found.</div>
-    </mat-card-content>
-    <mat-card-actions>
-      <button mat-button color="accent" (click)="goBack()">Back</button>
-    </mat-card-actions>
-  </mat-card>
+  <h2>Active Fixed Price Listings</h2>
+  <button mat-raised-button color="primary" (click)="createListing()">Create New Listing</button>
+  <div *ngIf="error" class="error">{{ error }}</div>
+  <table mat-table [dataSource]="activeDataSource" class="mat-elevation-z8">
+    <ng-container matColumnDef="id">
+      <th mat-header-cell *matHeaderCellDef>ID</th>
+      <td mat-cell *matCellDef="let listing">{{ listing.id }}</td>
+    </ng-container>
+    <ng-container matColumnDef="cardName">
+      <th mat-header-cell *matHeaderCellDef>Card Name</th>
+      <td mat-cell *matCellDef="let listing">{{ listing.cardName }}</td>
+    </ng-container>
+    <ng-container matColumnDef="cardSet">
+      <th mat-header-cell *matHeaderCellDef>Card Set</th>
+      <td mat-cell *matCellDef="let listing">{{ listing.cardSet }}</td>
+    </ng-container>
+    <ng-container matColumnDef="cardNumber">
+      <th mat-header-cell *matHeaderCellDef>Card Number</th>
+      <td mat-cell *matCellDef="let listing">{{ listing.cardNumber }}</td>
+    </ng-container>
+    <ng-container matColumnDef="overallGrade">
+      <th mat-header-cell *matHeaderCellDef>Grade</th>
+      <td mat-cell *matCellDef="let listing">{{ listing.overallGrade }}</td>
+    </ng-container>
+    <ng-container matColumnDef="price">
+      <th mat-header-cell *matHeaderCellDef>Price (SGD)</th>
+      <td mat-cell *matCellDef="let listing">{{ listing.buyoutPrice | number:'1.2-2' }}</td>
+    </ng-container>
+    <ng-container matColumnDef="soldPrice">
+      <th mat-header-cell *matHeaderCellDef>Sold Price (SGD)</th>
+      <td mat-cell *matCellDef="let listing">{{ listing.soldPrice ? (listing.soldPrice | number:'1.2-2') : '-' }}</td>
+    </ng-container>
+    <ng-container matColumnDef="soldDate">
+      <th mat-header-cell *matHeaderCellDef>Sold Date</th>
+      <td mat-cell *matCellDef="let listing">{{ listing.soldDate ? (listing.soldDate | date:'medium') : '-' }}</td>
+    </ng-container>
+    <ng-container matColumnDef="frontImage">
+      <th mat-header-cell *matHeaderCellDef>Front Image</th>
+      <td mat-cell *matCellDef="let listing">
+        <img [src]="'data:image/jpeg;base64,' + listing.frontImage" alt="Front Image" class="thumbnail" />
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="backImage">
+      <th mat-header-cell *matHeaderCellDef>Back Image</th>
+      <td mat-cell *matCellDef="let listing">
+        <img [src]="'data:image/jpeg;base64,' + listing.backImage" alt="Back Image" class="thumbnail" />
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef>Actions</th>
+      <td mat-cell *matCellDef="let listing">
+        <button mat-raised-button color="primary" (click)="purchase(listing.id)">Purchase</button>
+      </td>
+    </ng-container>
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+
+  <h2>Your Sold Fixed Price Listings</h2>
+  <button mat-raised-button color="accent" (click)="exportToGoogleSheets()">Export to Google Sheets</button>
+  <table mat-table [dataSource]="soldDataSource" class="mat-elevation-z8">
+    <ng-container matColumnDef="id">
+      <th mat-header-cell *matHeaderCellDef>ID</th>
+      <td mat-cell *matCellDef="let listing">{{ listing.id }}</td>
+    </ng-container>
+    <ng-container matColumnDef="cardName">
+      <th mat-header-cell *matHeaderCellDef>Card Name</th>
+      <td mat-cell *matCellDef="let listing">{{ listing.cardName }}</td>
+    </ng-container>
+    <ng-container matColumnDef="cardSet">
+      <th mat-header-cell *matHeaderCellDef>Card Set</th>
+      <td mat-cell *matCellDef="let listing">{{ listing.cardSet }}</td>
+    </ng-container>
+    <ng-container matColumnDef="cardNumber">
+      <th mat-header-cell *matHeaderCellDef>Card Number</th>
+      <td mat-cell *matCellDef="let listing">{{ listing.cardNumber }}</td>
+    </ng-container>
+    <ng-container matColumnDef="overallGrade">
+      <th mat-header-cell *matHeaderCellDef>Grade</th>
+      <td mat-cell *matCellDef="let listing">{{ listing.overallGrade }}</td>
+    </ng-container>
+    <ng-container matColumnDef="price">
+      <th mat-header-cell *matHeaderCellDef>Price (SGD)</th>
+      <td mat-cell *matCellDef="let listing">{{ listing.buyoutPrice | number:'1.2-2' }}</td>
+    </ng-container>
+    <ng-container matColumnDef="soldPrice">
+      <th mat-header-cell *matHeaderCellDef>Sold Price (SGD)</th>
+      <td mat-cell *matCellDef="let listing">{{ listing.soldPrice | number:'1.2-2' }}</td>
+    </ng-container>
+    <ng-container matColumnDef="soldDate">
+      <th mat-header-cell *matHeaderCellDef>Sold Date</th>
+      <td mat-cell *matCellDef="let listing">{{ listing.soldDate | date:'medium' }}</td>
+    </ng-container>
+    <ng-container matColumnDef="frontImage">
+      <th mat-header-cell *matHeaderCellDef>Front Image</th>
+      <td mat-cell *matCellDef="let listing">
+        <img [src]="'data:image/jpeg;base64,' + listing.frontImage" alt="Front Image" class="thumbnail" />
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="backImage">
+      <th mat-header-cell *matHeaderCellDef>Back Image</th>
+      <td mat-cell *matCellDef="let listing">
+        <img [src]="'data:image/jpeg;base64,' + listing.backImage" alt="Back Image" class="thumbnail" />
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef>Actions</th>
+      <td mat-cell *matCellDef="let listing"></td>
+    </ng-container>
+    <tr mat-header-row *matHeaderRowDef="displayedSoldColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedSoldColumns;"></tr>
+  </table>
 </div>

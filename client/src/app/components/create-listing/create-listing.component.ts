@@ -22,15 +22,17 @@ export class CreateListingComponent implements OnInit {
     private router: Router
   ) {
     this.listingForm = this.fb.group({
+      cardName: ['', Validators.required],
+      cardSet: ['', Validators.required],
+      cardNumber: ['', Validators.required],
       listingType: ['FIXED', Validators.required],
-      startingPrice: [null], // Required for AUCTION
-      buyoutPrice: [null], // Required for FIXED, optional for AUCTION
-      auctionStart: [null] // Required for AUCTION
+      startingPrice: [null],
+      buyoutPrice: [null],
+      auctionStart: [null]
     });
   }
 
   ngOnInit() {
-    // Set conditional validation based on listingType
     this.listingForm.get('listingType')?.valueChanges.subscribe(type => {
       const startingPriceControl = this.listingForm.get('startingPrice');
       const buyoutPriceControl = this.listingForm.get('buyoutPrice');
@@ -39,9 +41,9 @@ export class CreateListingComponent implements OnInit {
       if (type === 'AUCTION') {
         startingPriceControl?.setValidators([Validators.required, Validators.min(0.01)]);
         buyoutPriceControl?.clearValidators();
-        buyoutPriceControl?.setValidators(Validators.min(0.01)); // Optional, but must be positive if provided
+        buyoutPriceControl?.setValidators(Validators.min(0.01));
         auctionStartControl?.setValidators(Validators.required);
-      } else { // FIXED
+      } else {
         startingPriceControl?.clearValidators();
         buyoutPriceControl?.setValidators([Validators.required, Validators.min(0.01)]);
         auctionStartControl?.clearValidators();
@@ -52,7 +54,6 @@ export class CreateListingComponent implements OnInit {
       auctionStartControl?.updateValueAndValidity();
     });
 
-    // Trigger initial validation
     this.listingForm.get('listingType')?.updateValueAndValidity();
   }
 
@@ -80,9 +81,7 @@ export class CreateListingComponent implements OnInit {
     this.error = null;
     this.message = null;
 
-    const { listingType, startingPrice, buyoutPrice, auctionStart } = this.listingForm.value;
-
-    // Map form values to schema
+    const { cardName, cardSet, cardNumber, listingType, startingPrice, buyoutPrice, auctionStart } = this.listingForm.value;
     const startingPriceToSend = listingType === 'AUCTION' ? startingPrice : null;
     const buyoutPriceToSend = listingType === 'FIXED' ? buyoutPrice : (listingType === 'AUCTION' ? buyoutPrice : null);
 
@@ -92,7 +91,10 @@ export class CreateListingComponent implements OnInit {
       startingPriceToSend,
       buyoutPriceToSend,
       listingType,
-      auctionStart
+      auctionStart,
+      cardName,
+      cardSet,
+      cardNumber
     ).subscribe({
       next: (response) => {
         this.message = `Listing created successfully! Listing ID: ${response.listingId}`;

@@ -2,7 +2,31 @@
   <h2 mat-dialog-title>Create a Marketplace Listing</h2>
 
   <form [formGroup]="listingForm" (ngSubmit)="createListing()" class="form-container">
-    <!-- Front Image Upload -->
+    
+    <mat-form-field appearance="fill">
+      <mat-label>Card Name</mat-label>
+      <input matInput formControlName="cardName" placeholder="e.g., Charizard" />
+      <mat-error *ngIf="listingForm.get('cardName')?.touched && listingForm.get('cardName')?.errors?.['required']">
+        Card name is required
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Set</mat-label>
+      <input matInput formControlName="cardSet" placeholder="e.g., Base Set" />
+      <mat-error *ngIf="listingForm.get('cardSet')?.touched && listingForm.get('cardSet')?.errors?.['required']">
+        Set is required
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Card Number</mat-label>
+      <input matInput formControlName="cardNumber" placeholder="e.g., 4" />
+      <mat-error *ngIf="listingForm.get('cardNumber')?.touched && listingForm.get('cardNumber')?.errors?.['required']">
+        Card number is required
+      </mat-error>
+    </mat-form-field>
+
     <div class="file-upload">
       <mat-label>Front Image</mat-label>
       <button mat-raised-button color="primary" type="button" (click)="frontImageInput.click()">
@@ -13,7 +37,6 @@
       <span *ngIf="!frontImage" class="file-placeholder">No file selected</span>
     </div>
 
-    <!-- Back Image Upload -->
     <div class="file-upload">
       <mat-label>Back Image</mat-label>
       <button mat-raised-button color="primary" type="button" (click)="backImageInput.click()">
@@ -35,7 +58,6 @@
       </mat-error>
     </mat-form-field>
 
-    <!-- Starting Price for Auction -->
     <mat-form-field appearance="fill" *ngIf="listingForm.get('listingType')?.value === 'AUCTION'">
       <mat-label>Starting Price (SGD)</mat-label>
       <input matInput type="number" formControlName="startingPrice" min="0.01" step="0.01" placeholder="Enter starting price" />
@@ -47,7 +69,6 @@
       </mat-error>
     </mat-form-field>
 
-    <!-- Price for Fixed -->
     <mat-form-field appearance="fill" *ngIf="listingForm.get('listingType')?.value === 'FIXED'">
       <mat-label>Price (SGD)</mat-label>
       <input matInput type="number" formControlName="buyoutPrice" min="0.01" step="0.01" placeholder="Enter fixed price" />
@@ -59,7 +80,6 @@
       </mat-error>
     </mat-form-field>
 
-    <!-- Buyout Price for Auction (Optional) -->
     <mat-form-field appearance="fill" *ngIf="listingForm.get('listingType')?.value === 'AUCTION'">
       <mat-label>Buyout Price (SGD) (Optional)</mat-label>
       <input matInput type="number" formControlName="buyoutPrice" min="0.01" step="0.01" placeholder="Enter buyout price (optional)" />

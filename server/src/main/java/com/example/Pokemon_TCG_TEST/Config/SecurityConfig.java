@@ -1,5 +1,6 @@
 package com.example.Pokemon_TCG_TEST.Config;
 
+import java.util.Arrays;
 import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,9 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.endpoint.OAuth2AccessTokenResponseClient;
+import org.springframework.security.oauth2.client.endpoint.OAuth2AuthorizationCodeGrantRequest;
+import org.springframework.security.oauth2.client.endpoint.RestClientAuthorizationCodeTokenResponseClient;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -29,34 +33,35 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            // Disable CSRF (since we're using JWT, not session-based auth)
             .csrf(csrf -> csrf.disable())
-            // Enable CORS
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-            // Configure authorization
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**", "/api/telegram/link").permitAll()
-                // .requestMatchers("/api/auth/login", "/api/auth/register", "/api/telegram/link").permitAll() // Public endpoints
-                .anyRequest().authenticated() // All other endpoints require authentication
+                .requestMatchers("/api/auth/**", "/api/marketplace/oauth2/authorize", "/api/marketplace/export-sold-callback").permitAll()
+                .anyRequest().authenticated()
             )
-            // Disable session management (stateless for JWT)
-            .sessionManagement(session -> session
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            .oauth2Login(oauth2 -> oauth2
+                .defaultSuccessUrl("/api/marketplace/export-sold-callback", true)
+                .authorizationEndpoint(auth -> auth.baseUri("/api/marketplace/oauth2/authorize"))
+                .tokenEndpoint(token -> token.accessTokenResponseClient(accessTokenResponseClient()))
             )
-            // Add JWT filter before UsernamePasswordAuthenticationFilter
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
-
-        logger.info("Security configuration applied: /api/auth/** and /error are public.");
         return http.build();
+    }
+
+    @Bean
+    public OAuth2AccessTokenResponseClient<OAuth2AuthorizationCodeGrantRequest> accessTokenResponseClient() {
+        return new RestClientAuthorizationCodeTokenResponseClient();
     }
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.addAllowedOrigin("https://localhost:4300"); // Angular frontend
+        configuration.setAllowedOrigins(Arrays.asList("https://localhost:4300", "https://accounts.google.com"));
         configuration.addAllowedMethod("*"); // Allow GET, POST, etc.
         configuration.addAllowedHeader("*"); // Allow all headers
         configuration.setAllowCredentials(true); // Allow cookies/credentials if needed
+        configuration.setMaxAge(3600L);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
