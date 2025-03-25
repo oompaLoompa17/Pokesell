@@ -29,6 +29,8 @@ import { MatGridListModule } from '@angular/material/grid-list';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 import { FixedListingsComponent } from './components/fixed-listings/fixed-listings.component';
 import { AuctionListingsComponent } from './components/auction-listings/auction-listings.component';
 import { PurchaseComponent } from './components/purchase/purchase.component';
@@ -88,7 +90,9 @@ const routes: Routes = [
     MatGridListModule,
     MatPaginatorModule,
     MatProgressSpinnerModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
   ],
   exports: [
     RouterModule

@@ -1,0 +1,22 @@
+/* Existing styles */
+.thumbnail { max-width: 150px; margin: 10px; }
+.error { color: red; }
+.no-listings { text-align: center; padding: 20px; }
+
+.bid-container {
+display: flex;
+flex-direction: column;
+gap: 10px;
+margin-bottom: 10px;
+}
+
+mat-form-field {
+width: 150px;
+}
+
+button {
+margin-top: 5px;
+}
+
+/* New style */
+.telegram-subscription { margin-top: 20px; text-align: center; }

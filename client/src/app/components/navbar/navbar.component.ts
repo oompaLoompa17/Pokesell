@@ -14,6 +14,10 @@ export class NavbarComponent {
   isLoggedIn() {
     return !!localStorage.getItem('authToken');
   }
+  
+  getUserEmail(): string | null {
+    return this.authService.getUserEmail();
+  }
 
   logout() {
     this.authService.logout().subscribe({

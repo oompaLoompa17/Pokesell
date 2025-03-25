@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PokemonService, Listing } from '../../services/pokemon.service';
 import { MatTableDataSource } from '@angular/material/table';
+import { interval, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-auction-listings',
@@ -9,14 +10,15 @@ import { MatTableDataSource } from '@angular/material/table';
   templateUrl: './auction-listings.component.html',
   styleUrls: ['./auction-listings.component.css']
 })
-export class AuctionListingsComponent implements OnInit {
+export class AuctionListingsComponent implements OnInit, OnDestroy {
   activeDataSource = new MatTableDataSource<Listing>();
   soldDataSource = new MatTableDataSource<Listing>();
-  displayedColumns: string[] = ['id', 'cardName', 'cardSet', 'cardNumber', 'overallGrade', 'price', 'buyoutPrice', 'soldPrice', 'soldDate', 'frontImage', 'backImage', 'auctionEnd', 'actions'];
-  displayedSoldColumns: string[] = ['id', 'cardName', 'cardSet', 'cardNumber', 'overallGrade', 'price', 'soldPrice', 'soldDate'];
+  displayedColumns: string[] = ['id', 'cardName', 'cardSet', 'cardNumber', 'overallGrade', 'price', 'buyoutPrice', 'frontImage', 'backImage', 'auctionEnd', 'actions'];
+  displayedSoldColumns: string[] = ['id', 'cardName', 'cardSet', 'cardNumber', 'overallGrade', 'soldPrice', 'soldDate'];
   error: string | null = null;
   successMessage: string | null = null;
-  spreadsheetUrl: string | null = null;
+  spreadsheetUrl: string | null = null;  
+  private timerSubscription!: Subscription;
 
   constructor(private pokemonService: PokemonService, private router: Router, private route: ActivatedRoute) {}
 
@@ -28,8 +30,7 @@ export class AuctionListingsComponent implements OnInit {
             this.successMessage = 'Export successful!';
             this.spreadsheetUrl = params['spreadsheetUrl'];
             console.log('Spreadsheet URL:', this.spreadsheetUrl);
-            // Optionally open the spreadsheet
-            // window.open(this.spreadsheetUrl, '_blank');
+            // window.open(this.spreadsheetUrl, '_blank'); // Optionally open the spreadsheet
           } else {
             this.successMessage = params['message'] || 'Export successful, but no sold listings found.';
           }
@@ -39,37 +40,59 @@ export class AuctionListingsComponent implements OnInit {
         }
       }
     });
-    this.loadListings(); // Your existing method
-    this.checkPendingExport(); // Your existing method
+    this.loadListings(); 
+    this.checkPendingExport();
+    // Start the real-time timer
+    this.timerSubscription = interval(1000).subscribe(() => {
+      // Trigger change detection by reassigning the data array
+      this.activeDataSource.data = [...this.activeDataSource.data];
+    });
   }
+
+  createListing() {this.router.navigate(['/create-listing']);}
 
   loadListings() {
     this.pokemonService.getActiveListings().subscribe({
-      next: (listings) => {
-        this.activeDataSource.data = listings.filter(l => l.listingType === 'AUCTION');
-      },
-      error: (err) => {
-        this.error = 'Failed to load active listings: ' + err.message;
-      }
-    });
-
+      next: (listings) => {this.activeDataSource.data = listings.filter(l => l.listingType === 'AUCTION');},
+      error: (err) => {this.error = 'Failed to load active listings: ' + err.message;}});
     this.pokemonService.getSoldListings().subscribe({
-      next: (listings) => {
-        this.soldDataSource.data = listings.filter(l => l.listingType === 'AUCTION');
+      next: (listings) => {this.soldDataSource.data = listings.filter(l => l.listingType === 'AUCTION');},
+      error: (err) => {this.error = 'Failed to load sold listings: ' + err.message;}});
+  }
+
+  placeBid(listingId: number, bidAmount: string, listing: Listing) {
+    const bidValue = parseFloat(bidAmount);
+    
+    if (!bidValue || (listing.startingPrice !== undefined && bidValue < listing.startingPrice) || 
+        (listing.buyoutPrice && bidValue > listing.buyoutPrice)) {
+      this.error = 'Invalid bid amount';
+      return;
+    }
+
+    this.pokemonService.placeBid(listingId, bidValue).subscribe({
+      next: (response) => {
+        this.error = null;
+        this.successMessage = `Bid of ${bidValue} SGD placed successfully!`;
+        listing.startingPrice = response.bidAmount; // Update current bid
+        this.loadListings(); // Refresh listings
       },
-      error: (err) => {
-        this.error = 'Failed to load sold listings: ' + err.message;
-      }
-    });
+      error: (err) => {this.error = 'Failed to place bid: ' + err.message;}});
   }
 
-  bid(listingId: number) {
-    this.router.navigate(['/marketplace/bid', listingId]);
+  getTimeLeft(auctionEnd: string): string {
+    const endTime = new Date(auctionEnd).getTime();
+    const now = new Date().getTime();
+    const diff = endTime - now;
+
+    if (diff <= 0) return 'Ended';
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+    return `${days}d ${hours}h ${minutes}m ${seconds}s`;
   }
 
-  buyout(listingId: number) {
-    this.router.navigate(['/marketplace/auction-purchase', listingId]);
-  }
+  buyout(listingId: number) {this.router.navigate(['/marketplace/auction-purchase', listingId]);}
 
   authorizeGoogle() {
     localStorage.setItem('pendingExport', 'true');
@@ -107,7 +130,10 @@ export class AuctionListingsComponent implements OnInit {
     }
   }
 
-  createListing() {
-    this.router.navigate(['/marketplace/create']);
+  ngOnDestroy() {
+    // Clean up the subscription to prevent memory leaks
+    if (this.timerSubscription) {
+      this.timerSubscription.unsubscribe();
+    }
   }
 }

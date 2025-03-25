@@ -12,8 +12,8 @@ import { MatTableDataSource } from '@angular/material/table';
 export class FixedListingsComponent implements OnInit {
   activeDataSource = new MatTableDataSource<Listing>();
   soldDataSource = new MatTableDataSource<Listing>();
-  displayedColumns: string[] = ['id', 'cardName', 'cardSet', 'cardNumber', 'overallGrade', 'price', 'soldPrice', 'soldDate', 'frontImage', 'backImage', 'actions'];
-  displayedSoldColumns: string[] = ['id', 'cardName', 'cardSet', 'cardNumber', 'overallGrade', 'price', 'soldPrice', 'soldDate'];
+  displayedColumns: string[] = ['id', 'cardName', 'cardSet', 'cardNumber', 'overallGrade', 'price', 'frontImage', 'backImage', 'actions'];
+  displayedSoldColumns: string[] = ['id', 'cardName', 'cardSet', 'cardNumber', 'overallGrade', 'soldPrice', 'soldDate'];
   error: string | null = null;
 
   constructor(private pokemonService: PokemonService, private router: Router) {}

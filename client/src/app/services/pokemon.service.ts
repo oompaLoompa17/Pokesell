@@ -64,10 +64,12 @@ export class PokemonService {
     if (cardNumber) formData.append('cardNumber', cardNumber);
     if (startingPrice) formData.append('startingPrice', startingPrice.toString());
     if (buyoutPrice) formData.append('buyoutPrice', buyoutPrice.toString());
-    if (auctionStart) formData.append('auctionStart', auctionStart);
+    if (auctionStart) {
+      formData.append('auctionStart', auctionStart)
+    }
     return this.http.post<{ message: string, listingId: number }>('/api/marketplace/list', formData);
   }
-
+  
   getActiveListings(): Observable<Listing[]> {
     return this.http.get<any[]>('/api/marketplace/active', { headers: this.getAuthHeaders() }).pipe(
       map(listings => listings.map(listing => ({

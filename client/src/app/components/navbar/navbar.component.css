@@ -16,11 +16,22 @@
 .nav-links {
   display: flex;
   align-items: center;
+  justify-content: space-between; /* Pushes left-links and right section apart */
   flex-grow: 1; /* Takes up remaining space */
 }
 
-.nav-links a, .nav-links button {
-  margin: 0 8px; /* Adds spacing between buttons */
+.left-links {
+  display: flex;
+  align-items: center;
+}
+
+.left-links a {
+  margin: 0 8px; /* Spacing between navigation buttons */
+}
+
+.welcome-text {
+  color: white;
+  margin: 0 16px; /* Spacing between email and logout button */
 }
 
 .nav-links button[mat-raised-button] {

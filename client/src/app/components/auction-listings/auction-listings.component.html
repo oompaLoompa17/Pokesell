@@ -1,5 +1,5 @@
 <div class="container">
-  <h2>Active Auction Listings</h2>
+  <h2>Active Auction Listings <span><h4>All listings commence at 10.00 PM SGT and last for 72 hours </h4></span></h2>
   <button mat-raised-button color="primary" (click)="createListing()">Create New Listing</button>
   <div *ngIf="error" class="error">{{ error }}</div>
   <table mat-table [dataSource]="activeDataSource" class="mat-elevation-z8">
@@ -53,18 +53,56 @@
     </ng-container>
     <ng-container matColumnDef="auctionEnd">
       <th mat-header-cell *matHeaderCellDef>Auction End</th>
-      <td mat-cell *matCellDef="let listing">{{ listing.auctionEnd | date:'medium' }}</td>
+      <td mat-cell *matCellDef="let listing">
+        <ng-container *ngIf="listing.status === 'PENDING'; else activeAuction">
+          Starts {{ listing.auctionStart | date:'medium' }}
+        </ng-container>
+        <ng-template #activeAuction>
+          Ends {{ listing.auctionEnd | date:'medium' }} 
+          <br>Time left: {{ getTimeLeft(listing.auctionEnd) }}
+        </ng-template>
+      </td>
     </ng-container>
+  
     <ng-container matColumnDef="actions">
       <th mat-header-cell *matHeaderCellDef>Actions</th>
       <td mat-cell *matCellDef="let listing">
-        <button mat-raised-button color="primary" (click)="bid(listing.id)">Bid</button>
-        <button mat-raised-button color="accent" *ngIf="listing.buyoutPrice" (click)="buyout(listing.id)">Buyout</button>
+        <ng-container *ngIf="listing.status === 'ACTIVE'; else pendingMessage">
+          <div class="bid-container">
+            <mat-form-field appearance="fill">
+              <mat-label>Bid Amount</mat-label>
+              <input matInput type="number" 
+                     #bidInput
+                     [min]="listing.startingPrice" 
+                     [max]="listing.buyoutPrice || undefined"
+                     required>
+              <mat-error *ngIf="bidInput.value && bidInput.value < listing.startingPrice">
+                Bid must be at least {{listing.startingPrice | number:'1.2-2'}} SGD
+              </mat-error>
+              <mat-error *ngIf="listing.buyoutPrice && bidInput.value > listing.buyoutPrice">
+                Bid cannot exceed {{listing.buyoutPrice | number:'1.2-2'}} SGD
+              </mat-error>
+            </mat-form-field>
+            <button mat-raised-button color="primary" 
+                    (click)="placeBid(listing.id, bidInput.value, listing)"
+                    [disabled]="!bidInput.value || bidInput.value < listing.startingPrice || 
+                               (listing.buyoutPrice && bidInput.value > listing.buyoutPrice)">
+              Place Bid
+            </button>
+          </div>
+          <button mat-raised-button color="accent" *ngIf="listing.buyoutPrice" 
+                  (click)="buyout(listing.id)">Buyout</button>
+        </ng-container>
+        <ng-template #pendingMessage>
+          <span>Auction not yet started</span>
+        </ng-template>
       </td>
     </ng-container>
+
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
     <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
   </table>
+  
   <div *ngIf="successMessage" class="alert alert-success">
     {{ successMessage }}
     <a *ngIf="spreadsheetUrl" [href]="spreadsheetUrl" target="_blank">View Spreadsheet</a>
@@ -96,14 +134,6 @@
       <th mat-header-cell *matHeaderCellDef>Grade</th>
       <td mat-cell *matCellDef="let listing">{{ listing.overallGrade }}</td>
     </ng-container>
-    <ng-container matColumnDef="price">
-      <th mat-header-cell *matHeaderCellDef>Starting Bid (SGD)</th>
-      <td mat-cell *matCellDef="let listing">{{ listing.startingPrice | number:'1.2-2' }}</td>
-    </ng-container>
-    <ng-container matColumnDef="buyoutPrice">
-      <th mat-header-cell *matHeaderCellDef>Buyout Price (SGD)</th>
-      <td mat-cell *matCellDef="let listing">{{ listing.buyoutPrice ? (listing.buyoutPrice | number:'1.2-2') : '-' }}</td>
-    </ng-container>
     <ng-container matColumnDef="soldPrice">
       <th mat-header-cell *matHeaderCellDef>Sold Price (SGD)</th>
       <td mat-cell *matCellDef="let listing">{{ listing.soldPrice | number:'1.2-2' }}</td>
@@ -112,22 +142,7 @@
       <th mat-header-cell *matHeaderCellDef>Sold Date</th>
       <td mat-cell *matCellDef="let listing">{{ listing.soldDate | date:'medium' }}</td>
     </ng-container>
-    <ng-container matColumnDef="frontImage">
-      <th mat-header-cell *matHeaderCellDef>Front Image</th>
-      <td mat-cell *matCellDef="let listing">
-        <img [src]="'data:image/jpeg;base64,' + listing.frontImage" alt="Front Image" class="thumbnail" />
-      </td>
-    </ng-container>
-    <ng-container matColumnDef="backImage">
-      <th mat-header-cell *matHeaderCellDef>Back Image</th>
-      <td mat-cell *matCellDef="let listing">
-        <img [src]="'data:image/jpeg;base64,' + listing.backImage" alt="Back Image" class="thumbnail" />
-      </td>
-    </ng-container>
-    <ng-container matColumnDef="auctionEnd">
-      <th mat-header-cell *matHeaderCellDef>Auction End</th>
-      <td mat-cell *matCellDef="let listing">{{ listing.auctionEnd | date:'medium' }}</td>
-    </ng-container>
+  
     <ng-container matColumnDef="actions">
       <th mat-header-cell *matHeaderCellDef>Actions</th>
       <td mat-cell *matCellDef="let listing"></td>

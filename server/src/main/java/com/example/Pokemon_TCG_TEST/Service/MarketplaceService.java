@@ -31,7 +31,6 @@ import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.sheets.v4.Sheets;
-import com.google.api.services.sheets.v4.model.ClearValuesRequest;
 import com.google.api.services.sheets.v4.model.Spreadsheet;
 import com.google.api.services.sheets.v4.model.SpreadsheetProperties;
 import com.google.api.services.sheets.v4.model.ValueRange;
@@ -69,15 +68,20 @@ public class MarketplaceService {
         listing.setBuyoutPrice(buyoutPrice);
         listing.setListingType(listingType);
         if ("AUCTION".equals(listingType)) {
+            if (auctionStart == null) {
+                throw new IllegalArgumentException("Auction start time is required for auction listings");
+            }
             listing.setAuctionStart(auctionStart);
-            listing.setAuctionEnd(auctionStart.plusHours(1));
+            listing.setAuctionEnd(auctionStart.plusDays(3)); // Set auction duration to 3 days
+            listing.setStatus(auctionStart.isAfter(LocalDateTime.now()) ? "PENDING" : "ACTIVE"); // Set as PENDING if in future
+        } else {
+            listing.setStatus("ACTIVE");
         }
-        listing.setStatus("ACTIVE");
         return listingRepo.save(listing);
     }
 
     public List<Listing> getActiveListings() {
-        List<Listing> listings = listingRepo.findByStatus("ACTIVE");
+        List<Listing> listings = listingRepo.findByStatusIn(Arrays.asList("ACTIVE", "PENDING"));
         listings.forEach(listing -> {
             if ("AUCTION".equals(listing.getListingType())) {
                 Optional<Bid> highestBid = bidRepo.findHighestBidByListingId(listing.getId());
@@ -124,24 +128,30 @@ public class MarketplaceService {
 
     @Scheduled(fixedRate = 60000)
     public void checkAuctionEndTimes() {
-        List<Listing> activeAuctions = listingRepo.findByStatus("ACTIVE");
         LocalDateTime now = LocalDateTime.now();
+        List<Listing> listings = listingRepo.findByStatusIn(Arrays.asList("PENDING", "ACTIVE"));
 
-        for (Listing auction : activeAuctions) {
-            if ("AUCTION".equals(auction.getListingType()) && auction.getAuctionEnd() != null) {
-                long minutesLeft = ChronoUnit.MINUTES.between(now, auction.getAuctionEnd());
-                if (minutesLeft <= 5 && minutesLeft > 0) {
-                    if (!hasNotified(auction.getId())) {
-                        String message = String.format(
-                            "Auction #%d (Grade %s) is ending soon! Less than %d minute%s left. Current bid: SGD %.2f",
-                            auction.getId(), auction.getOverallGrade(), minutesLeft, minutesLeft == 1 ? "" : "s",
-                            auction.getStartingPrice()
-                        );
-                        telegramBotService.sendNotification(message);
-                        markAsNotified(auction.getId());
+        for (Listing listing : listings) {
+            if ("AUCTION".equals(listing.getListingType()) && listing.getAuctionEnd() != null) {
+                if ("PENDING".equals(listing.getStatus()) && now.isAfter(listing.getAuctionStart())) {
+                    listing.setStatus("ACTIVE");
+                    listingRepo.save(listing);
+                    telegramBotService.sendNotification("Auction #" + listing.getId() + " has started!");
+                } else if ("ACTIVE".equals(listing.getStatus())) {
+                    long minutesLeft = ChronoUnit.MINUTES.between(now, listing.getAuctionEnd());
+                    if (minutesLeft <= 5 && minutesLeft > 0) {
+                        if (!hasNotified(listing.getId())) {
+                            String message = String.format(
+                                "Auction #%d (Grade %s) is ending soon! Less than %d minute%s left. Current bid: SGD %.2f",
+                                listing.getId(), listing.getOverallGrade(), minutesLeft, minutesLeft == 1 ? "" : "s",
+                                listing.getStartingPrice()
+                            );
+                            telegramBotService.sendNotification(message);
+                            markAsNotified(listing.getId());
+                        }
+                    } else if (minutesLeft <= 0) {
+                        closeAuction(listing);
                     }
-                } else if (minutesLeft <= 0 && "ACTIVE".equals(auction.getStatus())) {
-                    closeAuction(auction);
                 }
             }
         }

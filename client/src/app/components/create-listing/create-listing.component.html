@@ -89,10 +89,15 @@
     </mat-form-field>
 
     <mat-form-field appearance="fill" *ngIf="listingForm.get('listingType')?.value === 'AUCTION'">
-      <mat-label>Auction Start Time</mat-label>
-      <input matInput type="datetime-local" formControlName="auctionStart" />
+      <mat-label>Auction Start Date (Begins at 10 PM)</mat-label>
+      <input matInput [matDatepicker]="picker" formControlName="auctionStart" placeholder="Choose a start date" [min]="minDate">
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker startView="month"></mat-datepicker>
       <mat-error *ngIf="listingForm.get('auctionStart')?.touched && listingForm.get('auctionStart')?.errors?.['required']">
-        Auction start time is required
+        Auction start date is required
+      </mat-error>
+      <mat-error *ngIf="listingForm.get('auctionStart')?.touched && listingForm.get('auctionStart')?.errors?.['matDatepickerMin']">
+        Auction start date must be in the future
       </mat-error>
     </mat-form-field>
 

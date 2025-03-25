@@ -80,10 +80,6 @@
       <th mat-header-cell *matHeaderCellDef>Grade</th>
       <td mat-cell *matCellDef="let listing">{{ listing.overallGrade }}</td>
     </ng-container>
-    <ng-container matColumnDef="price">
-      <th mat-header-cell *matHeaderCellDef>Price (SGD)</th>
-      <td mat-cell *matCellDef="let listing">{{ listing.buyoutPrice | number:'1.2-2' }}</td>
-    </ng-container>
     <ng-container matColumnDef="soldPrice">
       <th mat-header-cell *matHeaderCellDef>Sold Price (SGD)</th>
       <td mat-cell *matCellDef="let listing">{{ listing.soldPrice | number:'1.2-2' }}</td>
@@ -91,18 +87,6 @@
     <ng-container matColumnDef="soldDate">
       <th mat-header-cell *matHeaderCellDef>Sold Date</th>
       <td mat-cell *matCellDef="let listing">{{ listing.soldDate | date:'medium' }}</td>
-    </ng-container>
-    <ng-container matColumnDef="frontImage">
-      <th mat-header-cell *matHeaderCellDef>Front Image</th>
-      <td mat-cell *matCellDef="let listing">
-        <img [src]="'data:image/jpeg;base64,' + listing.frontImage" alt="Front Image" class="thumbnail" />
-      </td>
-    </ng-container>
-    <ng-container matColumnDef="backImage">
-      <th mat-header-cell *matHeaderCellDef>Back Image</th>
-      <td mat-cell *matCellDef="let listing">
-        <img [src]="'data:image/jpeg;base64,' + listing.backImage" alt="Back Image" class="thumbnail" />
-      </td>
     </ng-container>
     <ng-container matColumnDef="actions">
       <th mat-header-cell *matHeaderCellDef>Actions</th>

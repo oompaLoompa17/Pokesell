@@ -11,6 +11,7 @@ import { Router } from '@angular/router';
 })
 export class CreateListingComponent implements OnInit {
   listingForm: FormGroup;
+  minDate = new Date(); // Prevent past dates
   frontImage: File | null = null;
   backImage: File | null = null;
   message: string | null = null;
@@ -85,13 +86,32 @@ export class CreateListingComponent implements OnInit {
     const startingPriceToSend = listingType === 'AUCTION' ? startingPrice : null;
     const buyoutPriceToSend = listingType === 'FIXED' ? buyoutPrice : (listingType === 'AUCTION' ? buyoutPrice : null);
 
+    let auctionStartFormatted: string | undefined = undefined;
+    if (listingType === 'AUCTION') {
+      if (!auctionStart) {
+        this.error = 'Auction start date is required.';
+        return;
+      }
+      // Set the auction start time to 10 PM (22:00) on the selected date in local time
+      const date = new Date(auctionStart);
+      date.setHours(22, 0, 0, 0); // 10 PM local time (e.g., SGT)
+      // Format to "yyyy-MM-dd'T'HH:mm:ss" without UTC conversion
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+      const day = String(date.getDate()).padStart(2, '0');
+      const hours = String(date.getHours()).padStart(2, '0');
+      const minutes = String(date.getMinutes()).padStart(2, '0');
+      const seconds = String(date.getSeconds()).padStart(2, '0');
+      auctionStartFormatted = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
+    }
+
     this.pokemonService.createListing(
       this.frontImage,
       this.backImage,
       startingPriceToSend,
       buyoutPriceToSend,
       listingType,
-      auctionStart,
+      auctionStartFormatted, // Now formatted as "yyyy-MM-dd'T'HH:mm:ss"
       cardName,
       cardSet,
       cardNumber
