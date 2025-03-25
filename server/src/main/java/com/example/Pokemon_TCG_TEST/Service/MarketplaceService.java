@@ -6,12 +6,9 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -43,7 +40,6 @@ public class MarketplaceService {
     @Autowired private ListingRepository listingRepo;
     @Autowired private BidRepository bidRepo;
     @Autowired private UserRepository userRepo;
-    @Autowired private TelegramBotService telegramBotService;
     @Autowired private OAuth2AuthorizedClientService clientService;
 
     public Listing createListing(Long userId, String cardName, String cardSet, String cardNumber, Map<String, Object> gradingResult,
@@ -136,35 +132,14 @@ public class MarketplaceService {
                 if ("PENDING".equals(listing.getStatus()) && now.isAfter(listing.getAuctionStart())) {
                     listing.setStatus("ACTIVE");
                     listingRepo.save(listing);
-                    telegramBotService.sendNotification("Auction #" + listing.getId() + " has started!");
                 } else if ("ACTIVE".equals(listing.getStatus())) {
                     long minutesLeft = ChronoUnit.MINUTES.between(now, listing.getAuctionEnd());
-                    if (minutesLeft <= 5 && minutesLeft > 0) {
-                        if (!hasNotified(listing.getId())) {
-                            String message = String.format(
-                                "Auction #%d (Grade %s) is ending soon! Less than %d minute%s left. Current bid: SGD %.2f",
-                                listing.getId(), listing.getOverallGrade(), minutesLeft, minutesLeft == 1 ? "" : "s",
-                                listing.getStartingPrice()
-                            );
-                            telegramBotService.sendNotification(message);
-                            markAsNotified(listing.getId());
-                        }
-                    } else if (minutesLeft <= 0) {
+                    if (minutesLeft <= 0) {
                         closeAuction(listing);
                     }
                 }
             }
         }
-    }
-
-    private final Set<Long> notifiedAuctions = Collections.synchronizedSet(new HashSet<>());
-
-    private boolean hasNotified(Long listingId) {
-        return notifiedAuctions.contains(listingId);
-    }
-
-    private void markAsNotified(Long listingId) {
-        notifiedAuctions.add(listingId);
     }
 
     private void closeAuction(Listing auction) {
@@ -177,13 +152,6 @@ public class MarketplaceService {
             auction.setStatus("EXPIRED");
         }
         listingRepo.save(auction);
-        String message = String.format(
-            "Auction #%d has ended! %s",
-            auction.getId(),
-            highestBid.map(bid -> "Sold for SGD " + String.format("%.2f", bid.getBidAmount())).orElse("No bids received.")
-        );
-        telegramBotService.sendNotification(message);
-        notifiedAuctions.remove(auction.getId());
     }
 
     public List<Listing> getSoldListingsByUser(Long userId) {

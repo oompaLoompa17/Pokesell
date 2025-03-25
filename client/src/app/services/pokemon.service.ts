@@ -12,37 +12,26 @@ export class PokemonService {
 
   private getAuthHeaders(): HttpHeaders {
     const token = this.authService.getToken();
-    return token ? new HttpHeaders().set('Authorization', `Bearer ${token}`) : new HttpHeaders();
-  }
+    return token ? new HttpHeaders().set('Authorization', `Bearer ${token}`) : new HttpHeaders();}
 
   searchCards(params: any): Observable<{ cards: any[], totalPages: number }> {
-    return this.http.get<{ cards: any[], totalPages: number }>('/api/cards/search', { params });
-  }
+    return this.http.get<{ cards: any[], totalPages: number }>('/api/cards/search', { params });}
 
   getCardDetails(cardId: string): Observable<any> {
-    return this.http.get(`/api/cards/${cardId}`);
-  }
+    return this.http.get(`/api/cards/${cardId}`);}
 
-  // New method to get all filters in one go
   getFilters(): Observable<{ sets: any[], types: string[], rarities: string[] }> {
-    return this.http.get<{ sets: any[], types: string[], rarities: string[] }>('/api/cards/filters');
-  }
+    return this.http.get<{ sets: any[], types: string[], rarities: string[] }>('/api/cards/filters');}
 
-  getFavorites(): Observable<{ data: any[] }> {
-    return this.http.get<{ data: any[] }>('/api/favorites');
-  }
+  getFavorites(): Observable<{ data: any[] }> {return this.http.get<{ data: any[] }>('/api/favorites');}
 
   addToFavorites(cardId: string): Observable<{ message: string }> {
-    return this.http.post<{ message: string }>('/api/favorites/add', { cardId });
-  }
+    return this.http.post<{ message: string }>('/api/favorites/add', { cardId });}
 
   removeFromFavorites(cardId: string): Observable<{ message: string }> {
-    return this.http.post<{ message: string }>('/api/favorites/remove', { cardId });
-  }
+    return this.http.post<{ message: string }>('/api/favorites/remove', { cardId });}
 
-  getAllCards(): Observable<any[]> {
-    return this.http.get<any[]>('/api/cards/raw');
-  }
+  getAllCards(): Observable<any[]> {return this.http.get<any[]>('/api/cards/raw');}
 
   createListing(
     frontImage: File,
@@ -116,45 +105,28 @@ export class PokemonService {
   }
 
   placeBid(listingId: number, bidAmount: number): Observable<{ message: string, bidId: number, bidAmount: number }> {
-    return this.http.post<{ message: string, bidId: number, bidAmount: number }>('/api/marketplace/bid', { listingId, bidAmount });
-  }
+    return this.http.post<{ message: string, bidId: number, bidAmount: number }>('/api/marketplace/bid', { listingId, bidAmount });}
 
   createAuctionBuyoutIntent(listingId: number): Observable<{ clientSecret: string }> {
-    return this.http.post<{ clientSecret: string }>('/api/marketplace/auction/buyout-intent', { listingId });
-  }
+    return this.http.post<{ clientSecret: string }>('/api/marketplace/auction/buyout-intent', { listingId });}
 
   completeAuctionBuyout(listingId: number): Observable<{ message: string }> {
-    return this.http.post<{ message: string }>('/api/marketplace/auction/buyout', { listingId });
-  }
+    return this.http.post<{ message: string }>('/api/marketplace/auction/buyout', { listingId });}
 
   createPaymentIntent(listingId: number, amount: number): Observable<{ clientSecret: string }> {
-    return this.http.post<{ clientSecret: string }>('/api/marketplace/payment-intent', { listingId, amount });
-  }
+    return this.http.post<{ clientSecret: string }>('/api/marketplace/payment-intent', { listingId, amount });}
 
   completePurchase(listingId: number): Observable<{ message: string }> {
-    return this.http.post<{ message: string }>('/api/marketplace/purchase', { listingId });
-  }
-
-  generateTelegramSubscriptionDeepLink(): Observable<{ deepLink: string, subscribed: string }> {
-    return this.http.get<{ deepLink: string, subscribed: string }>('/api/telegram/subscribe');
-  }
+    return this.http.post<{ message: string }>('/api/marketplace/purchase', { listingId });}
 
   checkGoogleAuth(): Observable<{ isAuthorized: boolean }> {
-    return this.http.get<{ isAuthorized: boolean }>('/api/marketplace/check-auth', { withCredentials: true });
-  }
+    return this.http.get<{ isAuthorized: boolean }>('/api/marketplace/check-auth', { withCredentials: true });}
 
   exportToGoogleSheets(): Observable<{ message: string, spreadsheetUrl?: string }> {
-    return this.http.post<{ message: string, spreadsheetUrl?: string }>('/api/marketplace/export-sold', {}, { withCredentials: true });
-  }
-
-  // exportSoldListings(): void {
-  //   // Instead of an HTTP POST, redirect to the backend's OAuth2 authorization endpoint
-  //   window.location.href = '/api/marketplace/oauth2/authorize';
-  // }
+    return this.http.post<{ message: string, spreadsheetUrl?: string }>('/api/marketplace/export-sold', {}, { withCredentials: true });}
 
   exportSoldListings(): Observable<any> {
-    return this.http.get('/api/marketplace/export-sold', { headers: this.getAuthHeaders() });
-  }
+    return this.http.get('/api/marketplace/export-sold', { headers: this.getAuthHeaders() });}
 }
 
 export interface Listing {
