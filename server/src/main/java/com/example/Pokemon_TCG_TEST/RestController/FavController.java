@@ -21,7 +21,7 @@ import com.example.Pokemon_TCG_TEST.Service.FavoriteService;
 
 @RestController
 @RequestMapping("/api/favorites")
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin
 public class FavController {
     @Autowired
     private CardService cardService;

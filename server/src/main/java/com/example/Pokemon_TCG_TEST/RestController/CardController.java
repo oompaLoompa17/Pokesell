@@ -19,7 +19,7 @@ import com.example.Pokemon_TCG_TEST.Utilities.SetResponse;
 
 @RestController
 @RequestMapping("/api/cards")
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin
 public class CardController {
 
     @Autowired

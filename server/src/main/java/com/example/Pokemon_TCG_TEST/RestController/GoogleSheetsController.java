@@ -10,12 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.oauth2.client.ClientAuthorizationException;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
-import org.springframework.security.oauth2.client.annotation.RegisteredOAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -32,6 +31,7 @@ import com.google.api.client.json.gson.GsonFactory;
 import jakarta.servlet.http.HttpServletResponse;
 
 @RestController
+@CrossOrigin
 @RequestMapping("/api/marketplace")
 public class GoogleSheetsController {
 
@@ -42,7 +42,7 @@ public class GoogleSheetsController {
     @Value("${spring.security.oauth2.client.registration.google.client-id}") private String clientId;
     @Value("${spring.security.oauth2.client.registration.google.redirect-uri}") private String redirectUri;
     @Value("${spring.security.oauth2.client.registration.google.client-secret}") private String clientSecret;
-    @Value("${google.spreadsheetId}") private String spreadsheetId;
+    @Value("${app.frontend.url}") private String frontendUrl; // New property
 
     @GetMapping("/oauth2/authorize")
     public void authorize(HttpServletResponse response) throws IOException {
@@ -71,7 +71,8 @@ public class GoogleSheetsController {
     @GetMapping("/export-sold")
     public void startExport(Authentication auth, HttpServletResponse response) throws IOException {
         if (auth == null || !auth.isAuthenticated()) {
-            response.sendRedirect("https://localhost:4300/marketplace/auctions?export=error&reason=login_required");
+            // response.sendRedirect("https://localhost:4300/marketplace/auctions?export=error&reason=login_required");
+            response.sendRedirect(frontendUrl + "/marketplace/auctions?export=error&reason=login_required");
             return;
         }
 
@@ -81,7 +82,8 @@ public class GoogleSheetsController {
 
         // Redirect to OAuth2 authorization if not yet authorized
         // Spring Security will handle this automatically when @RegisteredOAuth2AuthorizedClient is used
-        response.sendRedirect("https://localhost:8443/api/marketplace/export-sold-callback?userId=" + user.getId());
+        // response.sendRedirect("https://localhost:8443/api/marketplace/export-sold-callback?userId=" + user.getId());
+        response.sendRedirect("https://pokesell.org/api/marketplace/export-sold-callback?userId=" + user.getId());
     }
 
     @GetMapping("/export-sold-callback")
@@ -91,6 +93,20 @@ public class GoogleSheetsController {
             Authentication auth,
             HttpServletResponse response) throws IOException {
         try {
+            // ////////////////////////////////////////////////
+            if (auth == null || !auth.isAuthenticated()) {
+                // Redirect to login page if not authenticated
+                String redirect = frontendUrl + "/login?redirect=/marketplace/auctions&reason=login_required";
+                System.out.println("Redirecting (unauthenticated): " + redirect);
+                response.sendRedirect(redirect);
+                return;
+            }
+    
+            String email = auth.getName();
+            User user = userRepo.findByEmail(email)
+                .orElseThrow(() -> new IllegalStateException("User not found"));
+            // //////////////////////////////////////////////// 
+
             // Exchange the authorization code for an access token
             GoogleTokenResponse tokenResponse = new GoogleAuthorizationCodeTokenRequest(
                 new NetHttpTransport(),
@@ -99,18 +115,18 @@ public class GoogleSheetsController {
                 clientId,
                 clientSecret,
                 code,
+                // "https://localhost:8443/api/marketplace/export-sold-callback"
                 redirectUri
             ).execute();
 
             String accessToken = tokenResponse.getAccessToken();
-
             // Retrieve the Google client registration
             ClientRegistration googleRegistration = clientRegistrationRepository.findByRegistrationId("google");
             if (googleRegistration == null) {
                 throw new IllegalStateException("Google ClientRegistration not found!");
             }
     
-            // ✅ Properly build OAuth2AuthorizedClient
+            // Properly build OAuth2AuthorizedClient
             OAuth2AuthorizedClient client = new OAuth2AuthorizedClient(
                 googleRegistration,  // Use the correct ClientRegistration
                 auth.getName(),
@@ -122,38 +138,44 @@ public class GoogleSheetsController {
                 )
             );
 
-            // Find user
-            String email = auth.getName();
-            User user = userRepo.findByEmail(email)
-                .orElseThrow(() -> new IllegalStateException("User not found"));
+            // // Find user
+            // String email = auth.getName();
+            // User user = userRepo.findByEmail(email)
+            //     .orElseThrow(() -> new IllegalStateException("User not found"));
             Long userId = user.getId();
 
-            // Export to Google Sheets
+        //     // Export to Google Sheets
+        //     String spreadsheetId = marketplaceService.exportSoldListingsToSheets(userId, client);
+        //     if (spreadsheetId == null) {
+        //         // response.sendRedirect("https://localhost:4300/marketplace/auctions?export=success&message=no_sold_listings");
+        //         response.sendRedirect(frontendUrl + "/marketplace/auctions?export=success&message=no_sold_listings");
+        //     } else {
+        //         String spreadsheetUrl = "https://docs.google.com/spreadsheets/d/" + spreadsheetId;
+        //         // response.sendRedirect("https://localhost:4300/marketplace/auctions?export=success&spreadsheetUrl=" + 
+        //         response.sendRedirect(frontendUrl + "/marketplace/auctions?export=success&spreadsheetUrl=" + 
+        //             URLEncoder.encode(spreadsheetUrl, StandardCharsets.UTF_8));
+        //     }
+        // } catch (Exception e) {
+        //     // response.sendRedirect("https://localhost:4300/marketplace/auctions?export=error&reason=" + 
+        //     response.sendRedirect(frontendUrl + "/marketplace/auctions?export=error&reason=" + 
+        //         URLEncoder.encode(e.getMessage(), StandardCharsets.UTF_8));
+        // }
             String spreadsheetId = marketplaceService.exportSoldListingsToSheets(userId, client);
+            String redirectUrl;
             if (spreadsheetId == null) {
-                response.sendRedirect("https://localhost:4300/marketplace/auctions?export=success&message=no_sold_listings");
+                redirectUrl = frontendUrl + "/marketplace/auctions?export=success&message=no_sold_listings";
             } else {
                 String spreadsheetUrl = "https://docs.google.com/spreadsheets/d/" + spreadsheetId;
-                response.sendRedirect("https://localhost:4300/marketplace/auctions?export=success&spreadsheetUrl=" + 
-                    URLEncoder.encode(spreadsheetUrl, StandardCharsets.UTF_8));
+                redirectUrl = frontendUrl + "/marketplace/auctions?export=success&spreadsheetUrl=" + 
+                    URLEncoder.encode(spreadsheetUrl, StandardCharsets.UTF_8);
             }
+            System.out.println("Redirecting (success): " + redirectUrl);
+            response.sendRedirect(redirectUrl);
         } catch (Exception e) {
-            response.sendRedirect("https://localhost:4300/marketplace/auctions?export=error&reason=" + 
-                URLEncoder.encode(e.getMessage(), StandardCharsets.UTF_8));
+            String redirectUrl = frontendUrl + "/marketplace/auctions?export=error&reason=" + 
+                URLEncoder.encode(e.getMessage(), StandardCharsets.UTF_8);
+            System.err.println("Redirecting (error): " + redirectUrl);
+            response.sendRedirect(redirectUrl);
         }
     }
-}
-
-    class ExportResponse {
-        private String message;
-        private String spreadsheetUrl;
-
-        public ExportResponse(String message) {
-            this.message = message;}
-        public ExportResponse(String message, String spreadsheetUrl) {
-            this.message = message;
-            this.spreadsheetUrl = spreadsheetUrl;}
-
-        public String getMessage() { return message; }
-        public String getSpreadsheetUrl() { return spreadsheetUrl; }
 }

@@ -146,23 +146,7 @@
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
-		</dependency>
-
-		<!-- Telegram
-		<dependency>
-			<groupId>org.telegram</groupId>
-			<artifactId>telegrambots</artifactId>
-			<version>6.9.0</version>
-		</dependency>		 -->
-
-		<!-- Apache HTTP client
-		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpclient</artifactId>
-			<version>4.5.14</version>
-		</dependency> -->
-
-				
+		</dependency>				
 	</dependencies>
 
 	<build>

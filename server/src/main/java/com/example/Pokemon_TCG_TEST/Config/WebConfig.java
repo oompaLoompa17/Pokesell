@@ -14,7 +14,8 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**") // Apply CORS to all endpoints
-                .allowedOrigins("https://localhost:4300") // Allow your Angular frontend
+                // .allowedOrigins("https://localhost:4300") // Allow your Angular frontend
+                .allowedOrigins("https://pokesell.org", "https://accounts.google.com") // Allow your Angular frontend
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // Allowed HTTP methods
                 .allowedHeaders("*") // Allow all headers
                 .allowCredentials(true) // Allow cookies/auth headers (e.g., Authorization)
@@ -26,7 +27,9 @@ public class WebConfig implements WebMvcConfigurer {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.addAllowedOrigin("https://localhost:4300");
+        // config.addAllowedOrigin("https://localhost:4300");
+        config.addAllowedOrigin("https://pokesell.org"); // Frontend domain
+        config.addAllowedOrigin("https://accounts.google.com"); // Google OAuth
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
         source.registerCorsConfiguration("/**", config);

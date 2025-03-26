@@ -3,6 +3,7 @@ package com.example.Pokemon_TCG_TEST.Service;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -69,7 +70,7 @@ public class MarketplaceService {
             }
             listing.setAuctionStart(auctionStart);
             listing.setAuctionEnd(auctionStart.plusDays(3)); // Set auction duration to 3 days
-            listing.setStatus(auctionStart.isAfter(LocalDateTime.now()) ? "PENDING" : "ACTIVE"); // Set as PENDING if in future
+            listing.setStatus(auctionStart.isAfter(LocalDateTime.now(ZoneId.of("Asia/Singapore"))) ? "PENDING" : "ACTIVE"); // Set as PENDING if in future
         } else {
             listing.setStatus("ACTIVE");
         }
@@ -89,7 +90,7 @@ public class MarketplaceService {
 
     public Bid placeBid(Long listingId, Long bidderId, Double bidAmount) {
         Listing listing = listingRepo.findById(listingId).orElseThrow();
-        if (!"AUCTION".equals(listing.getListingType()) || LocalDateTime.now().isAfter(listing.getAuctionEnd())) {
+        if (!"AUCTION".equals(listing.getListingType()) || LocalDateTime.now(ZoneId.of("Asia/Singapore")).isAfter(listing.getAuctionEnd())) {
             throw new IllegalStateException("Auction not active");
         }
         Bid bid = new Bid();
@@ -101,7 +102,7 @@ public class MarketplaceService {
 
     @Scheduled(fixedRate = 60000) // Check every minute
     public void closeAuctions() {
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now(ZoneId.of("Asia/Singapore")); // Force SGT
         listingRepo.findByStatus("ACTIVE").stream()
             .filter(l -> "AUCTION".equals(l.getListingType()) && now.isAfter(l.getAuctionEnd()))
             .forEach(this::closeAuction);
@@ -118,13 +119,13 @@ public class MarketplaceService {
         }
         listing.setStatus("SOLD");
         listing.setSoldPrice(listing.getBuyoutPrice() != null ? listing.getBuyoutPrice() : listing.getStartingPrice());
-        listing.setSoldDate(LocalDateTime.now()); 
+        listing.setSoldDate(LocalDateTime.now(ZoneId.of("Asia/Singapore"))); // Force SGT
         listingRepo.save(listing);
     }
 
     @Scheduled(fixedRate = 60000)
     public void checkAuctionEndTimes() {
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now(ZoneId.of("Asia/Singapore"));
         List<Listing> listings = listingRepo.findByStatusIn(Arrays.asList("PENDING", "ACTIVE"));
 
         for (Listing listing : listings) {
@@ -147,7 +148,7 @@ public class MarketplaceService {
         if (highestBid.isPresent()) {
             auction.setStatus("SOLD");
             auction.setSoldPrice(highestBid.get().getBidAmount()); // Set soldPrice to highest bid
-            auction.setSoldDate(LocalDateTime.now());
+            auction.setSoldDate(LocalDateTime.now(ZoneId.of("Asia/Singapore")));
         } else {
             auction.setStatus("EXPIRED");
         }
@@ -160,6 +161,7 @@ public class MarketplaceService {
 
     public String exportSoldListingsToSheets(Long userId, OAuth2AuthorizedClient client) 
             throws IOException, GeneralSecurityException {
+        System.out.println("Exporting sold listings for user: " + userId);
         List<Listing> soldListings = getSoldListingsByUser(userId);
         if (soldListings.isEmpty()) {
             return null;
@@ -176,6 +178,7 @@ public class MarketplaceService {
                     .setTitle("Pokemon TCG Sold Listings - User " + userId));
             spreadsheet = sheetsService.spreadsheets().create(spreadsheet).execute();
             spreadsheetId = spreadsheet.getSpreadsheetId();
+            System.out.println("Spreadsheet created: " + spreadsheetId);
             user.setSpreadsheetId(spreadsheetId);
             userRepo.save(user);
         }

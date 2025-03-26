@@ -45,16 +45,3 @@ CREATE TABLE bids (
     FOREIGN KEY (listing_id) REFERENCES listings(id),
     FOREIGN KEY (bidder_id) REFERENCES users(id)
 );
-
--- -- Offers table: Stores counter-offers for fixed-price listings
--- CREATE TABLE offers (
---     id BIGINT AUTO_INCREMENT PRIMARY KEY,
---     listing_id BIGINT NOT NULL,
---     buyer_id BIGINT NOT NULL,
---     offer_price DECIMAL(10,2) NOT NULL,
---     status ENUM('PENDING', 'ACCEPTED', 'REJECTED') DEFAULT 'PENDING',
---     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
---     FOREIGN KEY (listing_id) REFERENCES listings(id),
---     FOREIGN KEY (buyer_id) REFERENCES users(id)
--- );
-

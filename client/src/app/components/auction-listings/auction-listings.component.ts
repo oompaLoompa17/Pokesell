@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { PokemonService, Listing } from '../../services/pokemon.service';
 import { MatTableDataSource } from '@angular/material/table';
 import { interval, Subscription } from 'rxjs';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-auction-listings',
@@ -20,7 +21,7 @@ export class AuctionListingsComponent implements OnInit, OnDestroy {
   spreadsheetUrl: string | null = null;  
   private timerSubscription!: Subscription;
 
-  constructor(private pokemonService: PokemonService, private router: Router, private route: ActivatedRoute) {}
+  constructor(private pokemonService: PokemonService, private authService: AuthService, private router: Router, private route: ActivatedRoute) {}
 
   ngOnInit() {
     this.route.queryParams.subscribe(params => {
@@ -96,12 +97,17 @@ export class AuctionListingsComponent implements OnInit, OnDestroy {
 
   authorizeGoogle() {
     localStorage.setItem('pendingExport', 'true');
-    window.location.href = 'https://localhost:8443/api/marketplace/oauth2/authorize';
+    // window.location.href = 'https://localhost:8443/api/marketplace/oauth2/authorize';
+    window.location.href = '/api/marketplace/oauth2/authorize';
 }
 
   exportToSheets(): void {
     // Instead of an HTTP request, redirect the browser to the backend's OAuth2 authorize endpoint
-    window.location.href = 'https://localhost:8443/api/marketplace/oauth2/authorize';
+    // window.location.href = 'https://localhost:8443/api/marketplace/oauth2/authorize';
+    // window.location.href = '/api/marketplace/oauth2/authorize';
+    //////////////////////////////////////////////////////////
+    window.location.href = 'https://pokesell.org/api/marketplace/oauth2/authorize'; // Use absolute HTTPS URL
+    //////////////////////////////////////////////////////////
   }
 
   private performExport() {

@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, isDevMode } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { AppComponent } from './app.component';
@@ -35,6 +35,7 @@ import { FixedListingsComponent } from './components/fixed-listings/fixed-listin
 import { AuctionListingsComponent } from './components/auction-listings/auction-listings.component';
 import { PurchaseComponent } from './components/purchase/purchase.component';
 import { AuctionPurchaseComponent } from './components/auction-purchase/auction-purchase.component';
+import { ServiceWorkerModule } from '@angular/service-worker';
 
 const routes: Routes = [
   { path: '', component: LoginComponent }, 
@@ -93,6 +94,12 @@ const routes: Routes = [
     MatSnackBarModule,
     MatDatepickerModule,
     MatNativeDateModule,
+    ServiceWorkerModule.register('ngsw-worker.js', {
+      enabled: !isDevMode(),
+      // Register the ServiceWorker as soon as the application is stable
+      // or after 30 seconds (whichever comes first).
+      registrationStrategy: 'registerWhenStable:30000'
+    }),
   ],
   exports: [
     RouterModule

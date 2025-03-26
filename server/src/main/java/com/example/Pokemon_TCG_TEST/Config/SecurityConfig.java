@@ -27,19 +27,28 @@ import com.example.Pokemon_TCG_TEST.Utilities.JwtFilter;
 public class SecurityConfig {
 
     private static final Logger logger = Logger.getLogger(SecurityConfig.class.getName());
+    String frontendUrl = "https://pokesell.org";
 
     @Autowired private JwtFilter jwtFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+            //////////////////////////////////////////////////
+            .requiresChannel(channel -> channel.anyRequest().requiresSecure()) // Force HTTPS   
+            //////////////////////////////////////////////////
             .csrf(csrf -> csrf.disable())
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .authorizeHttpRequests(auth -> auth
+                // Allow public access to landing page and static resources
+                .requestMatchers("/", "/index.html", "/**.js", "/**.css", "/marketplace/**").permitAll()
                 .requestMatchers("/api/auth/**", "/api/marketplace/oauth2/authorize", "/api/marketplace/export-sold-callback").permitAll()
                 .anyRequest().authenticated()
             )
             .oauth2Login(oauth2 -> oauth2
+                ///////////////////////////////
+                // .defaultSuccessUrl("/marketplace/auctions?export=success", true)
+                ///////////////////////////////
                 .defaultSuccessUrl("/api/marketplace/export-sold-callback", true)
                 .authorizationEndpoint(auth -> auth.baseUri("/api/marketplace/oauth2/authorize"))
                 .tokenEndpoint(token -> token.accessTokenResponseClient(accessTokenResponseClient()))
@@ -57,7 +66,8 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("https://localhost:4300", "https://accounts.google.com"));
+        // configuration.setAllowedOrigins(Arrays.asList("https://localhost:4300", "https://accounts.google.com"));
+        configuration.setAllowedOrigins(Arrays.asList(frontendUrl, "https://accounts.google.com"));
         configuration.addAllowedMethod("*"); // Allow GET, POST, etc.
         configuration.addAllowedHeader("*"); // Allow all headers
         configuration.setAllowCredentials(true); // Allow cookies/credentials if needed

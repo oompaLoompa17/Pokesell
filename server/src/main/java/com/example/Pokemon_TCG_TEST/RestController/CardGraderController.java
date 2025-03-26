@@ -12,7 +12,7 @@ import com.example.Pokemon_TCG_TEST.Service.CardGraderService;
 
 @RestController
 @RequestMapping("/api/grader")
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin
 public class CardGraderController {
 
     private final CardGraderService graderService;

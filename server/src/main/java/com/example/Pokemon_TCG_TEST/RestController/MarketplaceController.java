@@ -33,7 +33,7 @@ import com.stripe.model.PaymentIntent;
 
 @RestController
 @RequestMapping("/api/marketplace")
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin
 public class MarketplaceController {
 
     @Value("${stripe.secret.key}") // Add to application.properties
