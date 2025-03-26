@@ -76,7 +76,7 @@ const routes: Routes = [
   imports: [
     BrowserModule,
     ReactiveFormsModule,
-    RouterModule.forRoot(routes),
+    RouterModule.forRoot(routes, {useHash: true}),
     HttpClientModule,
     BrowserAnimationsModule, 
     MatToolbarModule,
@@ -95,10 +95,11 @@ const routes: Routes = [
     MatDatepickerModule,
     MatNativeDateModule,
     ServiceWorkerModule.register('ngsw-worker.js', {
-      enabled: !isDevMode(),
-      // Register the ServiceWorker as soon as the application is stable
-      // or after 30 seconds (whichever comes first).
-      registrationStrategy: 'registerWhenStable:30000'
+      enabled: false
+      // enabled: !isDevMode(),
+      // // Register the ServiceWorker as soon as the application is stable
+      // // or after 30 seconds (whichever comes first).
+      // registrationStrategy: 'registerWhenStable:30000'
     }),
   ],
   exports: [

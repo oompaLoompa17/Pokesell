@@ -94,8 +94,8 @@ export class CreateListingComponent implements OnInit {
       }
       // Set the auction start time to 10 PM (22:00) on the selected date in local time
       const date = new Date(auctionStart);
-      date.setHours(13, 0, 0, 0); // 10 PM local time (e.g., SGT) <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-      // date.setHours(22, 0, 0, 0); // 10 PM local time (e.g., SGT) <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+      // date.setHours(13, 0, 0, 0); // 10 PM local time (e.g., SGT) <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+      date.setHours(22, 0, 0, 0); // 10 PM local time (e.g., SGT) <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
       // Format to "yyyy-MM-dd'T'HH:mm:ss" without UTC conversion
       const year = date.getFullYear();
       const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-based
