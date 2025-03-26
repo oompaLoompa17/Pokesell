@@ -1,23 +1,25 @@
+/* navbar.component.css */
 .nav-container {
   display: flex;
   align-items: center;
   width: 100%;
   padding: 0 16px;
+  background-color: #F4F1EA;
 }
 
 .title {
   font-size: 20px;
   font-weight: 500;
   margin-right: 24px;
-  color: white;
-  flex-grow: 0; /* Prevents title from stretching */
+  color: #382110;
+  flex-grow: 0;
 }
 
 .nav-links {
   display: flex;
   align-items: center;
-  justify-content: space-between; /* Pushes left-links and right section apart */
-  flex-grow: 1; /* Takes up remaining space */
+  justify-content: space-between;
+  flex-grow: 1;
 }
 
 .left-links {
@@ -26,14 +28,18 @@
 }
 
 .left-links a {
-  margin: 0 8px; /* Spacing between navigation buttons */
+  margin: 0 8px;
+  color: #00635D;
 }
 
 .welcome-text {
-  color: white;
-  margin: 0 16px; /* Spacing between email and logout button */
+  color: #382110;
+  margin: 0 16px;
+  font-weight: 500;
 }
 
 .nav-links button[mat-raised-button] {
-  margin-left: 16px; /* Extra spacing for Logout button */
+  margin-left: 16px;
+  background-color: #409D69;
+  color: white;
 }

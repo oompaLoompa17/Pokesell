@@ -1,17 +1,40 @@
-/* error.component.css */
+/* not-found.component.css */
 .container {
   padding: 20px;
   max-width: 500px;
-  margin: 0 auto;
+  margin: 40px auto;
+  background-color: #F4F1EA;
 }
 
 .error-card {
-  background-color: #ffebee;
-  color: #c62828;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: white;
+  color: #382110;
+  box-shadow: 0 2px 4px rgba(56, 33, 16, 0.1);
+  border: 1px solid #D6D0C4;
+  padding: 20px;
+}
+
+mat-card-title {
+  color: #8B1612;
+  font-size: 24px;
+  margin-bottom: 15px;
+}
+
+mat-card-content p {
+  margin-bottom: 20px;
+  font-size: 16px;
 }
 
 mat-form-field {
   width: 100%;
   margin-bottom: 16px;
+}
+
+button[mat-raised-button] {
+  background-color: #409D69;
+  color: white;
+}
+
+a[mat-button] {
+  color: #00635D;
 }

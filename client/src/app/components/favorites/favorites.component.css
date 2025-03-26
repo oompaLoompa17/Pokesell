@@ -1,85 +1,111 @@
+/* favorites.component.css */
 .container {
-  padding: 10px;
+  padding: 20px;
   max-width: 1200px;
-  font-size: 14px;
+  margin: 0 auto;
+  background-color: #F4F1EA;
 }
 
 h2 {
-  font-size: 18px;
-  margin-bottom: 10px;
-}
-
-mat-card-title {
-  font-size: 16px;
-  margin-bottom: 4px !important; /* Reduce title bottom margin */
+  color: #382110;
+  text-align: center;
+  margin: 20px 0;
+  font-size: 24px;
+  font-weight: 500;
 }
 
 .favorite-card {
+  background-color: white;
+  border: 1px solid #D6D0C4;
+  box-shadow: 0 2px 4px rgba(56, 33, 16, 0.1);
   display: flex;
   flex-direction: column;
   height: 100%;
-  padding: 8px;
-  overflow: hidden; /* Prevent content overflow */
+  overflow: hidden;
+}
+
+.favorite-card:hover {
+  box-shadow: 0 5px 10px rgba(56, 33, 16, 0.15);
+  transform: translateY(-3px);
+  transition: all 0.3s ease;
 }
 
 img[mat-card-image] {
   max-height: 200px;
   object-fit: contain;
-  margin-bottom: 0 !important; /* Remove bottom margin from image */
+  padding: 10px;
+  background-color: #F9F7F4;
+  border-bottom: 1px solid #D6D0C4;
+}
+
+mat-card-title {
+  color: #382110;
+  font-size: 16px;
+  font-weight: 600;
+  margin: 10px 0 !important;
 }
 
 mat-card-content {
   flex-grow: 1;
-  padding: 4px !important; /* Reduce padding further */
-  overflow-y: auto; /* Allow scrolling if needed */
-}
-
-/* Target the mat-list to reduce its padding */
-.mat-list-base {
-  padding-top: 0 !important;
-  padding-bottom: 0 !important;
-}
-
-/* Adjust the list items to be more compact */
-:host ::ng-deep .mat-list-item {
-  height: auto !important;
-  min-height: 32px !important; /* Reduce minimum height */
-}
-
-:host ::ng-deep .mat-list-item-content {
-  padding: 0 !important;
+  padding: 10px !important;
+  overflow-y: auto;
 }
 
 mat-list-item {
   height: auto !important;
-  margin-bottom: 0 !important;
+  min-height: 32px !important;
 }
 
-/* Make the list text more compact */
 [matListItemTitle] {
-  font-size: 12px !important;
-  margin-bottom: 0 !important;
+  color: #382110;
+  font-size: 14px !important;
+  font-weight: 500;
 }
 
 [matListItemLine] {
-  font-size: 12px !important;
-  line-height: 1.2 !important;
+  color: #333333;
+  font-size: 14px !important;
 }
 
 mat-card-actions {
+  padding: 10px !important;
   display: flex;
   justify-content: space-between;
-  padding: 4px 8px !important;
-  margin: 0 !important; /* Remove default margins */
+  background-color: #F9F7F4;
+  border-top: 1px solid #D6D0C4;
+}
+
+button[mat-button] {
+  font-size: 12px !important;
+}
+
+button[mat-button][color="primary"] {
+  color: #00635D;
+}
+
+button[mat-button][color="warn"] {
+  color: #8B1612;
+}
+
+.no-favorites {
+  max-width: 600px;
+  margin: 40px auto;
+}
+
+.info-card {
+  background-color: white;
+  padding: 30px;
+  text-align: center;
+  color: #382110;
+  border: 1px solid #D6D0C4;
 }
 
 .back-to-search {
-  margin-top: 10px;
+  margin-top: 20px;
   text-align: center;
 }
 
-/* Ensure buttons are visible */
-button[mat-button] {
-  line-height: 28px !important; /* Smaller button height */
-  font-size: 12px !important; /* Smaller button text */
+button[mat-raised-button][color="accent"] {
+  background-color: #8b6b61;
+  color: white;
 }

@@ -56,9 +56,16 @@
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
     <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
   </table>
+  <div *ngIf="successMessage" class="alert alert-success">
+    {{ successMessage }}
+    <a *ngIf="spreadsheetUrl" [href]="spreadsheetUrl" target="_blank">View Spreadsheet</a>
+  </div>
+  <div *ngIf="error" class="alert alert-danger">
+    Export failed: {{ error }}
+  </div>
 
   <h2>Your Sold Fixed Price Listings</h2>
-  <button mat-raised-button color="accent" (click)="exportToGoogleSheets()">Export to Google Sheets</button>
+  <button mat-raised-button color="accent" (click)="exportToSheets()">Export to Google Sheets</button>
   <table mat-table [dataSource]="soldDataSource" class="mat-elevation-z8">
     <ng-container matColumnDef="id">
       <th mat-header-cell *matHeaderCellDef>ID</th>

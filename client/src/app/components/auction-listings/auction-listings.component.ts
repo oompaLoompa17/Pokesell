@@ -97,17 +97,11 @@ export class AuctionListingsComponent implements OnInit, OnDestroy {
 
   authorizeGoogle() {
     localStorage.setItem('pendingExport', 'true');
-    // window.location.href = 'https://localhost:8443/api/marketplace/oauth2/authorize';
     window.location.href = '/api/marketplace/oauth2/authorize';
 }
 
   exportToSheets(): void {
-    // Instead of an HTTP request, redirect the browser to the backend's OAuth2 authorize endpoint
-    // window.location.href = 'https://localhost:8443/api/marketplace/oauth2/authorize';
-    //////////////////////////////////////////////////////////
-    // window.location.href = 'https://pokesell.org/api/marketplace/oauth2/authorize'; // Use absolute HTTPS URL
-    window.location.href = '/api/marketplace/oauth2/authorize'; // Use absolute HTTPS URL
-    //////////////////////////////////////////////////////////
+    window.location.href = '/api/marketplace/oauth2/authorize'; 
   }
 
   private performExport() {

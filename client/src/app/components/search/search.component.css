@@ -1,16 +1,37 @@
-/* search.component.css */
 .container {
-    padding: 20px;
-    max-width: 500px;
-    margin: 0 auto;
-  }
-  
-  .search-card {
-    padding: 16px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  }
-  
-  mat-form-field {
-    width: 100%;
-    margin-bottom: 16px;
-  }
+  padding: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+  background-color: #F4F1EA;
+}
+
+.search-card {
+  padding: 24px;
+  box-shadow: 0 2px 5px rgba(56, 33, 16, 0.1);
+  border: 1px solid #D6D0C4;
+  background-color: white;
+}
+
+mat-card-title {
+  color: #382110;
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+mat-form-field {
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+::ng-deep .mat-form-field-label {
+  color: #382110 !important;
+}
+
+::ng-deep .mat-form-field-underline {
+  background-color: #D6D0C4 !important;
+}
+
+button[mat-raised-button] {
+  background-color: #409D69;
+  color: white;
+}

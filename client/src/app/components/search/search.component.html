@@ -3,9 +3,11 @@
   <mat-card class="search-card">
     <mat-card-header>
       <mat-card-title>Find Your Favorite Pokémon Cards</mat-card-title>
+      <mat-card-subtitle>Search through thousands of Pokémon cards</mat-card-subtitle>
     </mat-card-header>
     <mat-card-content>
       <form [formGroup]="searchForm" (ngSubmit)="onSearch()">
+        <!-- Form fields remain the same -->
         <mat-form-field appearance="outline">
           <mat-label>Card Name</mat-label>
           <input matInput formControlName="name" placeholder="Enter card name">
@@ -34,8 +36,8 @@
             <mat-option *ngFor="let rarity of rarities" [value]="rarity">{{ rarity }}</mat-option>
           </mat-select>
         </mat-form-field>
-
-        <button mat-raised-button color="primary" type="submit">Search</button>
+        <!-- Update button styling -->
+        <button mat-raised-button color="primary" type="submit" style="width: 100%;">Search</button>
       </form>
     </mat-card-content>
   </mat-card>

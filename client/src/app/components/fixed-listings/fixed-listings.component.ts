@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { PokemonService, Listing } from '../../services/pokemon.service';
 import { MatTableDataSource } from '@angular/material/table';
 
@@ -15,11 +15,30 @@ export class FixedListingsComponent implements OnInit {
   displayedColumns: string[] = ['id', 'cardName', 'cardSet', 'cardNumber', 'overallGrade', 'price', 'frontImage', 'backImage', 'actions'];
   displayedSoldColumns: string[] = ['id', 'cardName', 'cardSet', 'cardNumber', 'overallGrade', 'soldPrice', 'soldDate'];
   error: string | null = null;
+  successMessage: string | null = null;
+  spreadsheetUrl: string | null = null;
 
-  constructor(private pokemonService: PokemonService, private router: Router) {}
+  constructor(private pokemonService: PokemonService, private router: Router, private route: ActivatedRoute) {}
 
   ngOnInit() {
+    this.route.queryParams.subscribe(params => {
+      if (params['export']) {
+        if (params['export'] === 'success') {
+          if (params['spreadsheetUrl']) {
+            this.successMessage = 'Export successful!';
+            this.spreadsheetUrl = params['spreadsheetUrl'];
+            console.log('Spreadsheet URL:', this.spreadsheetUrl);
+          } else {
+            this.successMessage = params['message'] || 'Export successful, but no sold listings found.';
+          }
+        } else if (params['export'] === 'error') {
+          this.error = params['reason'] || 'An unknown error occurred during export.';
+          console.error('Export error:', this.error);
+        }
+      }
+    });
     this.loadListings();
+    this.checkPendingExport();
   }
 
   loadListings() {
@@ -44,6 +63,41 @@ export class FixedListingsComponent implements OnInit {
 
   purchase(listingId: number) {
     this.router.navigate(['/marketplace/purchase', listingId]);
+  }
+
+  authorizeGoogle() {
+    localStorage.setItem('pendingExport', 'true');
+    window.location.href = '/api/marketplace/oauth2/authorize';
+  }
+
+  exportToSheets(): void {
+    window.location.href = '/api/marketplace/oauth2/authorize';
+  }
+
+  private performExport() {
+    this.pokemonService.exportToGoogleSheets().subscribe({
+      next: (response) => {
+        alert(response.message);
+        if (response.spreadsheetUrl) {
+          window.open(response.spreadsheetUrl, '_blank');
+        }
+      },
+      error: (err) => {
+        if (err.status === 401) {
+          alert('Google OAuth required. Redirecting to authorize...');
+          this.authorizeGoogle();
+        } else {
+          alert('Failed to export: ' + (err.error?.message || err.message));
+        }
+      }
+    });
+  }
+
+  private checkPendingExport() {
+    if (localStorage.getItem('pendingExport') === 'true' && this.router.url.includes('/marketplace/fixed')) {
+      localStorage.removeItem('pendingExport');
+      this.performExport();
+    }
   }
 
   exportToGoogleSheets() {
@@ -83,7 +137,5 @@ export class FixedListingsComponent implements OnInit {
     window.open(googleSheetsUrl, '_blank');
   }
 
-  createListing() {
-    this.router.navigate(['/marketplace/create']);
-  }
+  createListing() {this.router.navigate(['/create-listing']);}
 }

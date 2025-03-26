@@ -1,22 +1,85 @@
-/* Existing styles */
-.thumbnail { max-width: 150px; margin: 10px; }
-.error { color: red; }
-.no-listings { text-align: center; padding: 20px; }
-
-.bid-container {
-display: flex;
-flex-direction: column;
-gap: 10px;
-margin-bottom: 10px;
-}
-
-mat-form-field {
-width: 150px;
-}
-
-button {
-margin-top: 5px;
-}
-
-/* New style */
-.telegram-subscription { margin-top: 20px; text-align: center; }
+/* fixed-listings.component.css */
+.container {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    background-color: #F4F1EA;
+  }
+  
+  h2 {
+    color: #382110;
+    font-size: 24px;
+    margin: 20px 0;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #D6D0C4;
+  }
+  
+  .thumbnail {
+    max-width: 80px;
+    border: 1px solid #D6D0C4;
+    background-color: white;
+    padding: 5px;
+  }
+  
+  button[mat-raised-button][color="primary"] {
+    background-color: #409D69;
+    color: white;
+    margin: 10px 0 20px;
+  }
+  
+  button[mat-raised-button][color="accent"] {
+    background-color: #8b6b61;
+    color: white;
+    margin: 10px 0 20px;
+  }
+  
+  .mat-elevation-z8 {
+    background-color: white;
+    border: 1px solid #D6D0C4;
+    box-shadow: 0 2px 4px rgba(56, 33, 16, 0.1) !important;
+    margin-bottom: 30px;
+  }
+  
+  th.mat-header-cell {
+    background-color: #F9F7F4;
+    color: #382110;
+    font-weight: 600;
+    padding: 12px !important;
+    border-bottom: 2px solid #D6D0C4;
+  }
+  
+  td.mat-cell {
+    padding: 12px !important;
+    border-bottom: 1px solid #F4F1EA;
+    color: #333333;
+  }
+  
+  .error {
+    background-color: #F8D7D9;
+    color: #721C24;
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 4px;
+  }
+  
+  .no-listings {
+    text-align: center;
+    padding: 40px 20px;
+    background-color: white;
+    border: 1px solid #D6D0C4;
+    color: #382110;
+    font-size: 16px;
+    margin: 20px 0;
+  }
+  
+  /* Make the table more responsive */
+  .mat-table {
+    width: 100%;
+    overflow-x: auto;
+    display: block;
+  }
+  
+  /* Add some hover effects */
+  tr.mat-row:hover {
+    background-color: #F9F7F4;
+  }

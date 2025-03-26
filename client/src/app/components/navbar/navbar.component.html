@@ -1,31 +1,31 @@
-<mat-toolbar color="primary">
+<mat-toolbar style="background-color: #382110; color: white;">
   <div class="nav-container">
     <!-- Branding/Title -->
-    <span class="title">Pokésell: A Pokémon TCG Marketplace</span>
+    <span class="title" style="color: #382110;">Pokésell: A Pokémon TCG Marketplace</span>
     
     <!-- Navigation Links -->
     <div class="nav-links">
       <div class="left-links">
-        <a mat-button routerLink="/search">Search</a>
+        <a mat-button routerLink="/search" style="color: #382110;">Search</a>
         
         <!-- Logged-In Links -->
         <ng-container *ngIf="isLoggedIn()">
-          <a mat-button routerLink="/favorites">Favorites</a>
-          <a mat-button routerLink="/marketplace/fixed">Fixed Listings</a>
-          <a mat-button routerLink="/marketplace/auctions">Live Auctions</a>
-          <a mat-button routerLink="/create-listing">Create Listing</a>
+          <a mat-button routerLink="/favorites" style="color: #382110;">Favorites</a>
+          <a mat-button routerLink="/marketplace/fixed" style="color: #382110;">Fixed Listings</a>
+          <a mat-button routerLink="/marketplace/auctions" style="color: #382110;">Live Auctions</a>
+          <a mat-button routerLink="/create-listing" style="color: #382110;">Create Listing</a>
         </ng-container>
 
         <!-- Logged-Out Links -->
         <ng-container *ngIf="!isLoggedIn()">
-          <a mat-button routerLink="/register">Register</a>
-          <a mat-button routerLink="/">Login</a>
+          <a mat-button routerLink="/register" style="color: #382110;">Register</a>
+          <a mat-button routerLink="/" style="color: #382110;">Login</a>
         </ng-container>
       </div>
 
       <!-- Right Section: Email and Logout -->
       <ng-container *ngIf="isLoggedIn()">
-        <span class="welcome-text">Welcome {{ getUserEmail() }}!</span>
+        <span class="welcome-text" style="color: #382110;">Welcome {{ getUserEmail() }}!</span>
         <button mat-raised-button color="warn" (click)="logout()">Logout</button>
       </ng-container>
     </div>

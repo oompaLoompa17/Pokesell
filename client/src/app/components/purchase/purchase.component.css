@@ -1,37 +1,92 @@
+/* purchase.component.css and auction-purchase.component.css (same styling) */
 .container {
-    padding: 20px;
-  }
-  
-  .purchase-card {
-    max-width: 600px;
-    margin: 0 auto;
-  }
-  
-  .thumbnail {
-    max-width: 100px;
-    margin: 10px;
-  }
-  
-  .payment-section {
-    margin-top: 20px;
-  }
-  
-  #card-element {
-    border: 1px solid #ccc;
-    padding: 10px;
-    margin-bottom: 10px;
-    min-height: 40px; /* Ensure visible space */
-    width: 100%; /* Ensure it takes full width of container */
-  }
-  
-  .error {
-    color: red;
-  }
-  
-  .success {
-    color: green;
-  }
-  
-  .loading {
-    text-align: center;
-  }
+  padding: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+  background-color: #F4F1EA;
+}
+
+.purchase-card {
+  max-width: 600px;
+  margin: 0 auto;
+  background-color: white;
+  border: 1px solid #D6D0C4;
+  box-shadow: 0 2px 4px rgba(56, 33, 16, 0.1);
+}
+
+mat-card-title {
+  color: #382110;
+  font-size: 22px;
+  margin-bottom: 15px;
+}
+
+mat-card-header {
+  background-color: #F9F7F4;
+  padding: 15px;
+  border-bottom: 1px solid #D6D0C4;
+}
+
+.thumbnail {
+  max-width: 120px;
+  margin: 10px;
+  border: 1px solid #D6D0C4;
+  padding: 5px;
+  background-color: #F9F7F4;
+}
+
+.payment-section {
+  margin-top: 20px;
+  background-color: #F9F7F4;
+  padding: 15px;
+  border-radius: 4px;
+  border: 1px solid #D6D0C4;
+}
+
+.payment-section h3 {
+  color: #382110;
+  font-size: 18px;
+  margin-bottom: 15px;
+}
+
+#card-element {
+  border: 1px solid #D6D0C4;
+  padding: 12px;
+  margin-bottom: 15px;
+  min-height: 40px;
+  width: 100%;
+  background-color: white;
+  border-radius: 4px;
+}
+
+button[mat-raised-button][color="primary"] {
+  background-color: #409D69;
+  color: white;
+  margin-top: 10px;
+}
+
+button[mat-button][color="accent"] {
+  color: #00635D;
+}
+
+.error {
+  color: #8B1612;
+  background-color: #F8D7D9;
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 4px;
+  border: 1px solid #8B1612;
+}
+
+.success {
+  color: #409D69;
+  background-color: #E6F3EC;
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 4px;
+  border: 1px solid #409D69;
+}
+
+.loading {
+  text-align: center;
+  padding: 30px;
+}
